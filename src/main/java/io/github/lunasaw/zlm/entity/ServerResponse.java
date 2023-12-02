@@ -11,4 +11,10 @@ public class ServerResponse<T> {
 
     @JSONField(name = "data")
     private T data;
+
+    @JSONField(name = "msg")
+    private String msg;
+
+    @JSONField(name = "result")
+    private String result;
 }

@@ -6,9 +6,8 @@ import com.luna.common.check.Assert;
 import com.luna.common.net.HttpUtils;
 import io.github.lunasaw.zlm.config.ZlmProperties;
 import io.github.lunasaw.zlm.constant.ApiConstants;
-import io.github.lunasaw.zlm.entity.ServerNodeConfig;
-import io.github.lunasaw.zlm.entity.ServerResponse;
-import io.github.lunasaw.zlm.entity.Version;
+import io.github.lunasaw.zlm.entity.*;
+import io.github.lunasaw.zlm.entity.req.MediaReq;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,15 +32,6 @@ public class ZlmRestService {
     private ZlmProperties zlmProperties;
 
     /**
-     * 获取服务器配置
-     */
-    public static ServerResponse<ServerNodeConfig> getServerConfig(String host, String secret) {
-        String s = doApi(host, secret, ApiConstants.GET_SERVER_CONFIG, new HashMap<>());
-        return JSON.parseObject(s, new TypeReference<ServerResponse<ServerNodeConfig>>() {
-        });
-    }
-
-    /**
      * 获取版本信息
      */
     public static ServerResponse<Version> version(String host, String secret) {
@@ -62,72 +52,81 @@ public class ZlmRestService {
     /**
      * 获取网络线程负载
      */
-    public static ServerResponse getThreadsLoad(String host, String secret, Map<String, String> params) {
-        String s = doApi(host, secret, ApiConstants.GET_THREADS_LOAD, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+    public static ServerResponse<List<ThreadLoad>> getThreadsLoad(String host, String secret) {
+        String s = doApi(host, secret, ApiConstants.GET_THREADS_LOAD, new HashMap<>());
+        return JSON.parseObject(s, new TypeReference<ServerResponse<List<ThreadLoad>>>() {
         });
     }
 
     /**
      * 获取主要对象个数
      */
-    public static ServerResponse getStatistic(String host, String secret, Map<String, String> params) {
-        String s = doApi(host, secret, ApiConstants.GET_STATISTIC, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+    public static ServerResponse<ImportantObjectNum> getStatistic(String host, String secret) {
+        String s = doApi(host, secret, ApiConstants.GET_STATISTIC, new HashMap<>());
+        return JSON.parseObject(s, new TypeReference<ServerResponse<ImportantObjectNum>>() {
         });
     }
 
     /**
      * 获取后台线程负载
      */
-    public static ServerResponse getWorkThreadsLoad(String host, String secret, Map<String, String> params) {
-        String s = doApi(host, secret, ApiConstants.GET_WORK_THREADS_LOAD, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+    public static ServerResponse<List<ThreadLoad>> getWorkThreadsLoad(String host, String secret) {
+        String s = doApi(host, secret, ApiConstants.GET_WORK_THREADS_LOAD, new HashMap<>());
+        return JSON.parseObject(s, new TypeReference<ServerResponse<List<ThreadLoad>>>() {
         });
     }
 
     /**
      * 获取服务器配置
      */
-    public static ServerResponse getServerConfig(String host, String secret, Map<String, String> params) {
-        String s = doApi(host, secret, ApiConstants.GET_SERVER_CONFIG, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+    public static ServerResponse<ServerNodeConfig> getServerConfig(String host, String secret) {
+        String s = doApi(host, secret, ApiConstants.GET_SERVER_CONFIG, new HashMap<>());
+        return JSON.parseObject(s, new TypeReference<ServerResponse<ServerNodeConfig>>() {
         });
     }
 
     /**
      * 设置服务器配置
      */
-    public static ServerResponse setServerConfig(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> setServerConfig(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.SET_SERVER_CONFIG, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
     }
 
     /**
      * 重启服务器
+     * 重启服务器,只有Daemon方式才能重启，否则是直接关闭！
      */
-    public static ServerResponse restartServer(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<Object> restartServer(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.RESTART_SERVER, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<Object>>() {
         });
+    }
+
+    public static ServerResponse<List<MediaData>> getMediaList(String host, String secret, MediaReq mediaReq) {
+        return getMediaList(host, secret, mediaReq.toMap());
     }
 
     /**
      * 获取流列表
      */
-    public static ServerResponse getMediaList(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<List<MediaData>> getMediaList(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.GET_MEDIA_LIST, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<List<MediaData>>>() {
         });
+    }
+
+    public static ServerResponse<String> closeStream(String host, String secret, MediaReq mediaReq) {
+        return closeStream(host, secret, mediaReq.toMap());
     }
 
     /**
      * 关断单个流
      */
-    public static ServerResponse closeStream(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> closeStream(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.CLOSE_STREAM, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
     }
 
