@@ -300,16 +300,16 @@ public class ZlmRestService {
         });
     }
 
-    public static ServerResponse getMediaInfo(String host, String secret, MediaReq mediaReq) {
+    public static ServerResponse<MediaInfo> getMediaInfo(String host, String secret, MediaReq mediaReq) {
         return getMediaInfo(host, secret, mediaReq.toMap());
     }
 
     /**
      * 获取流信息
      */
-    public static ServerResponse getMediaInfo(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<MediaInfo> getMediaInfo(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.GET_MEDIA_INFO, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<MediaInfo>>() {
         });
     }
 
