@@ -1,0 +1,6 @@
+zlm:
+  nodes:
+    - server-id: zlm
+      host: "http://127.0.0.1:9092"
+      secret: zlm
+      enabled: true

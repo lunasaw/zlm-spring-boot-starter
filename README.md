@@ -5,7 +5,7 @@
 
 [www.isluna.ml](http://lunasaw.github.io)
 
-ZLMediaKit的spring-boot starter, 对ZLMediaKit的API进行了封装，方便使用。
+ZLMediaKit的spring-boot starter, 对[ZLMediaKit](https://github.com/ZLMediaKit/ZLMediaKit)的API进行了封装，方便使用。支持集群化管理。
 
 > 引入spring-boot-starter
 
