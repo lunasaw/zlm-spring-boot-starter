@@ -2,6 +2,7 @@ package io.github.lunasaw.zlm.api;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
+import com.google.common.collect.Maps;
 import com.luna.common.check.Assert;
 import com.luna.common.net.HttpUtils;
 import io.github.lunasaw.zlm.config.ZlmProperties;
@@ -140,101 +141,153 @@ public class ZlmRestService {
     }
 
     /**
+     * 获取所有TcpSession列表(获取所有tcp客户端相关信息)
+     *
+     * @param host
+     * @param secret
+     * @param localPort 筛选本机端口，例如筛选rtsp链接：554
+     * @param peerIp 筛选客户端ip
+     * @return
+     */
+    public static ServerResponse<List<TcpLink>> getAllSession(String host, String secret, String localPort, String peerIp) {
+        Map<String, String> params = new HashMap<>();
+        params.put("local_port", localPort);
+        params.put("peer_ip", peerIp);
+        return getAllSession(host, secret, params);
+    }
+
+    /**
      * 获取Session列表
      */
-    public static ServerResponse getAllSession(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<List<TcpLink>> getAllSession(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.GET_ALL_SESSION, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<List<TcpLink>>>() {
         });
     }
 
     /**
      * 断开tcp连接
      */
-    public static ServerResponse kickSession(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> kickSession(String host, String secret, String sessionId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("id", sessionId);
         String s = doApi(host, secret, ApiConstants.KICK_SESSION, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
     }
 
     /**
      * 批量断开tcp连接
      */
-    public static ServerResponse kickSessions(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> kickSessions(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.KICK_SESSIONS, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
+    }
+
+    /**
+     * 添加代理拉流
+     *
+     * @param host
+     * @param secret
+     * @param streamProxyItem
+     * @return
+     */
+    public static ServerResponse<StreamKey> addStreamProxy(String host, String secret, StreamProxyItem streamProxyItem) {
+        return addStreamProxy(host, secret, streamProxyItem.toMap());
     }
 
     /**
      * 添加rtsp/rtmp/hls拉流代理
      */
-    public static ServerResponse addStreamProxy(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<StreamKey> addStreamProxy(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.ADD_STREAM_PROXY, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<StreamKey>>() {
         });
     }
 
     /**
      * 关闭拉流代理
      */
-    public static ServerResponse delStreamProxy(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<StreamKey.StringDelFlag> delStreamProxy(String host, String secret, String key) {
+        Map<String, String> params = Maps.newHashMap();
+        params.put("key", key);
         String s = doApi(host, secret, ApiConstants.DEL_STREAM_PROXY, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<StreamKey.StringDelFlag>>() {
         });
+    }
+
+    public static ServerResponse<StreamKey> addStreamPusherProxy(String host, String secret, StreamPusherItem streamPusherItem) {
+        return addStreamPusherProxy(host, secret, streamPusherItem.toMap());
     }
 
     /**
      * 添加rtsp/rtmp推流
      */
-    public static ServerResponse addStreamPusherProxy(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<StreamKey> addStreamPusherProxy(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.ADD_STREAM_PUSHER_PROXY, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<StreamKey>>() {
         });
     }
 
     /**
      * 关闭推流
      */
-    public static ServerResponse delStreamPusherProxy(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<StreamKey.StringDelFlag> delStreamPusherProxy(String host, String secret, String key) {
+        Map<String, String> params = Maps.newHashMap();
+        params.put("key", key);
         String s = doApi(host, secret, ApiConstants.DEL_STREAM_PUSHER_PROXY, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<StreamKey.StringDelFlag>>() {
         });
+    }
+
+    public static ServerResponse<StreamKey> addFFmpegSource(String host, String secret, StreamFfmpegItem streamFfmpegItem) {
+        return addFFmpegSource(host, secret, streamFfmpegItem.toMap());
     }
 
     /**
      * 添加FFmpeg拉流代理
      */
-    public static ServerResponse addFFmpegSource(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<StreamKey> addFFmpegSource(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.ADD_FFMPEG_SOURCE, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<StreamKey>>() {
         });
     }
 
     /**
      * 关闭FFmpeg拉流代理
      */
-    public static ServerResponse delFFmpegSource(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<StreamKey.StringDelFlag> delFFmpegSource(String host, String secret, String key) {
+        Map<String, String> params = Maps.newHashMap();
+        params.put("key", key);
         String s = doApi(host, secret, ApiConstants.DEL_FFMPEG_SOURCE, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<StreamKey.StringDelFlag>>() {
         });
+    }
+
+    public static MediaOnlineStatus isMediaOnline(String host, String secret, MediaReq mediaReq) {
+        return isMediaOnline(host, secret, mediaReq.toMap());
     }
 
     /**
      * 流是否在线
      */
-    public static ServerResponse isMediaOnline(String host, String secret, Map<String, String> params) {
+    public static MediaOnlineStatus isMediaOnline(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.IS_MEDIA_ONLINE, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<MediaOnlineStatus>() {
         });
+    }
+
+    public static ServerResponse<MediaPlayer> getMediaPlayerList(String host, String secret, MediaReq mediaReq) {
+        return getMediaPlayerList(host, secret, mediaReq.toMap());
     }
 
     /**
      * 获取媒体流播放器列表
      */
-    public static ServerResponse getMediaPlayerList(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<MediaPlayer> getMediaPlayerList(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.GET_MEDIA_PLAYER_LIST, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<MediaPlayer>>() {
         });
     }
 
@@ -245,6 +298,10 @@ public class ZlmRestService {
         String s = doApi(host, secret, ApiConstants.BROADCAST_MESSAGE, params);
         return JSON.parseObject(s, new TypeReference<ServerResponse>() {
         });
+    }
+
+    public static ServerResponse getMediaInfo(String host, String secret, MediaReq mediaReq) {
+        return getMediaInfo(host, secret, mediaReq.toMap());
     }
 
     /**
