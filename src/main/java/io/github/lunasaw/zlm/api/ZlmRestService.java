@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.github.lunasaw.zlm.entity.rtp.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,7 @@ import io.github.lunasaw.zlm.entity.*;
 import io.github.lunasaw.zlm.entity.req.MediaReq;
 import io.github.lunasaw.zlm.entity.req.RecordReq;
 import io.github.lunasaw.zlm.entity.req.SnapshotReq;
+import io.github.lunasaw.zlm.entity.rtp.*;
 
 /**
  * @author luna
@@ -47,8 +47,8 @@ public class ZlmRestService {
     /**
      * 获取版本信息
      */
-    public static ServerResponse<Version> version(String host, String secret) {
-        String s = doApi(host, secret, ApiConstants.VERSION, new HashMap<>());
+    public static ServerResponse<Version> getVersion(String host, String secret) {
+        String s = doApi(host, secret, ApiConstants.GET_VERSION, new HashMap<>());
         return JSON.parseObject(s, new TypeReference<ServerResponse<Version>>() {
         });
     }
@@ -446,11 +446,11 @@ public class ZlmRestService {
      * 
      * @param streamId RTP的ssrc，16进制字符串或者是流的id(openRtpServer接口指定)
      */
-    public static RtpInfo getRtpInfo(String host, String secret, String streamId) {
+    public static RtpInfoResult getRtpInfo(String host, String secret, String streamId) {
         Map<String, String> params = new HashMap<>();
         params.put("stream_id", streamId);
         String s = doApi(host, secret, ApiConstants.GET_RTP_INFO, params);
-        return JSON.parseObject(s, new TypeReference<RtpInfo>() {
+        return JSON.parseObject(s, new TypeReference<RtpInfoResult>() {
         });
     }
 
@@ -507,72 +507,83 @@ public class ZlmRestService {
     /**
      * 更新RTP服务器过滤SSRC
      */
-    public static ServerResponse updateRtpServerSSRC(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> updateRtpServerSSRC(String host, String secret, String streamId, String ssrc) {
+        Map<String, String> params = new HashMap<>();
+        params.put("stream_id", streamId);
+        params.put("ssrc", ssrc);
         String s = doApi(host, secret, ApiConstants.UPDATE_RTP_SERVER_SSRC, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
     }
 
     /**
      * 暂停RTP超时检查
      */
-    public static ServerResponse pauseRtpCheck(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> pauseRtpCheck(String host, String secret, String streamId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("stream_id", streamId);
         String s = doApi(host, secret, ApiConstants.PAUSE_RTP_CHECK, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
     }
 
     /**
      * 恢复RTP超时检查
      */
-    public static ServerResponse resumeRtpCheck(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> resumeRtpCheck(String host, String secret, String streamId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("stream_id", streamId);
         String s = doApi(host, secret, ApiConstants.RESUME_RTP_CHECK, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
     }
 
     /**
      * 获取RTP服务器列表
      */
-    public static ServerResponse listRtpServer(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<List<RtpServer>> listRtpServer(String host, String secret) {
+        Map<String, String> params = new HashMap<>();
         String s = doApi(host, secret, ApiConstants.LIST_RTP_SERVER, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<List<RtpServer>>>() {
         });
+    }
+
+    public static StartSendRtpResult startSendRtp(String host, String secret, StartSendRtpReq req) {
+        return startSendRtp(host, secret, req.toMap());
     }
 
     /**
      * 开始发送rtp
      */
-    public static ServerResponse startSendRtp(String host, String secret, Map<String, String> params) {
+    public static StartSendRtpResult startSendRtp(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.START_SEND_RTP, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<StartSendRtpResult>() {
         });
+    }
+
+    public static StartSendRtpResult startSendRtpPassive(String host, String secret, StartSendRtpReq req) {
+        return startSendRtpPassive(host, secret, req.getPassiveMap());
     }
 
     /**
      * 开始tcp passive被动发送rtp
      */
-    public static ServerResponse startSendRtpPassive(String host, String secret, Map<String, String> params) {
+    public static StartSendRtpResult startSendRtpPassive(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.START_SEND_RTP_PASSIVE, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<StartSendRtpResult>() {
         });
+    }
+
+    public static ServerResponse<String> stopSendRtp(String host, String secret, CloseSendRtpReq req) {
+        return stopSendRtp(host, secret, req.getMap());
     }
 
     /**
      * 停止 发送rtp
      */
-    public static ServerResponse stopSendRtp(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> stopSendRtp(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.STOP_SEND_RTP, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
-        });
-    }
-
-    /**
-     * 获取版本信息
-     */
-    public static ServerResponse getVersion(String host, String secret, Map<String, String> params) {
-        String s = doApi(host, secret, ApiConstants.GET_VERSION, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
     }
 

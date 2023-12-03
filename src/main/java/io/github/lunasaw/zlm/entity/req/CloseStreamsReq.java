@@ -1,9 +1,8 @@
 package io.github.lunasaw.zlm.entity.req;
 
-import lombok.Data;
-
-import java.util.HashMap;
 import java.util.Map;
+
+import lombok.Data;
 
 /**
  * @author weidian

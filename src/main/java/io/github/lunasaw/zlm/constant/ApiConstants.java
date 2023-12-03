@@ -105,7 +105,7 @@ public class ApiConstants {
     public static final String GET_SNAP = API_INDEX + "/getSnap";
 
     /*获取版本信息*/
-    public static final String VERSION = API_INDEX + "/version";
+    public static final String GET_VERSION = API_INDEX + "/version";
 
     /*查询文件概览*/
     public static final String GET_MP4_RECORD_SUMMARY = API_INDEX + "/getMp4RecordSummary";

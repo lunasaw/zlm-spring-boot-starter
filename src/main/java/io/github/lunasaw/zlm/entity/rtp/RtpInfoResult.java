@@ -8,7 +8,7 @@ import lombok.Data;
  * 获取rtp代理时的某路ssrc rtp信息。
  */
 @Data
-public class RtpInfo {
+public class RtpInfoResult {
 
     /**
      * 状态码。
