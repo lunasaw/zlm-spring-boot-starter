@@ -41,9 +41,6 @@ public class ZlmRestService {
 
     private static final String URL = "http://127.0.0.1:9092";
     private static final String SECRET = "zlm";
-    @Autowired
-    private ZlmProperties zlmProperties;
-
     /**
      * 获取版本信息
      */
