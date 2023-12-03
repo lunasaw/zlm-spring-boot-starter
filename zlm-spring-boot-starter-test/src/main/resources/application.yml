@@ -6,3 +6,6 @@ logging:
   config: classpath:log/logback.xml
   level:
     root: INFO
+
+server:
+  port: 8081
