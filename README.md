@@ -8,7 +8,9 @@
 ZLMediaKit的spring-boot starter, 对[ZLMediaKit](https://github.com/ZLMediaKit/ZLMediaKit)的API进行了封装，方便使用。支持集群化管理。
 
 [文档链接](https://github.com/lunasaw/zlm-spring-boot-starter/blob/master/zlm-api.md)
+
 [API文档](https://lunasaw.github.io/zlm-spring-boot-starter/)
+![img.png](images/img.png)
 
 > 引入spring-boot-starter
 

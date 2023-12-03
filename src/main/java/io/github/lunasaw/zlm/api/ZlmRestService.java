@@ -1,22 +1,34 @@
 package io.github.lunasaw.zlm.api;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.TypeReference;
-import com.google.common.collect.Maps;
-import com.luna.common.check.Assert;
-import com.luna.common.net.HttpUtils;
-import io.github.lunasaw.zlm.config.ZlmProperties;
-import io.github.lunasaw.zlm.constant.ApiConstants;
-import io.github.lunasaw.zlm.entity.*;
-import io.github.lunasaw.zlm.entity.req.MediaReq;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import io.github.lunasaw.zlm.entity.rtp.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
+import com.google.common.collect.Maps;
+import com.luna.common.check.Assert;
+import com.luna.common.file.FileTools;
+import com.luna.common.net.HttpUtils;
+
+import io.github.lunasaw.zlm.config.ZlmProperties;
+import io.github.lunasaw.zlm.constant.ApiConstants;
+import io.github.lunasaw.zlm.entity.*;
+import io.github.lunasaw.zlm.entity.req.MediaReq;
+import io.github.lunasaw.zlm.entity.req.RecordReq;
+import io.github.lunasaw.zlm.entity.req.SnapshotReq;
 
 /**
  * @author luna
@@ -313,76 +325,111 @@ public class ZlmRestService {
         });
     }
 
+    public static ServerResponse<Mp4RecordFile> getMp4RecordFile(String host, String secret, RecordReq recordReq) {
+        return getMp4RecordFile(host, secret, recordReq.toMap());
+    }
+
     /**
      * 获取流信息
      */
-    public static ServerResponse getMp4RecordFile(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<Mp4RecordFile> getMp4RecordFile(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.GET_MP4_RECORD_FILE, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<Mp4RecordFile>>() {
         });
     }
 
     /**
      * 删除录像文件夹
      */
-    public static ServerResponse deleteRecordDirectory(String host, String secret, Map<String, String> params) {
+    public static DeleteRecordDirectory deleteRecordDirectory(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.DELETE_RECORD_DIRECTORY, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<DeleteRecordDirectory>() {
         });
+    }
+
+    public static ServerResponse<String> startRecord(String host, String secret, RecordReq recordReq) {
+        return startRecord(host, secret, recordReq.getSaveMp4Map());
     }
 
     /**
      * 开始录制
      */
-    public static ServerResponse startRecord(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> startRecord(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.START_RECORD, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
+    }
+
+    public static ServerResponse<String> setRecordSpeed(String host, String secret, RecordReq recordReq) {
+        return setRecordSpeed(host, secret, recordReq.getRecordSpeedMap());
     }
 
     /**
      * 设置录像速度
      */
-    public static ServerResponse setRecordSpeed(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> setRecordSpeed(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.SET_RECORD_SPEED, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
+    }
+
+    public static ServerResponse<String> seekRecordStamp(String host, String secret, RecordReq recordReq) {
+        return seekRecordStamp(host, secret, recordReq.getSeekRecordStampMap());
     }
 
     /**
      * 设置录像流播放位置
      */
-    public static ServerResponse seekRecordStamp(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> seekRecordStamp(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.SEEK_RECORD_STAMP, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
+    }
+
+    public static ServerResponse<String> stopRecord(String host, String secret, RecordReq recordReq) {
+        return stopRecord(host, secret, recordReq.getStopRecordMap());
     }
 
     /**
      * 停止录制
      */
-    public static ServerResponse stopRecord(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> stopRecord(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.STOP_RECORD, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
+    }
+
+    public static ServerResponse<String> isRecording(String host, String secret, RecordReq recordReq) {
+        return isRecording(host, secret, recordReq.getIsRecordingMap());
     }
 
     /**
      * 是否正在录制
      */
-    public static ServerResponse isRecording(String host, String secret, Map<String, String> params) {
+    public static ServerResponse<String> isRecording(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.IS_RECORDING, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<ServerResponse<String>>() {
         });
+    }
+
+    public static String getSnap(String host, String secret, SnapshotReq snapshotReq) {
+        return getSnap(host, secret, snapshotReq.toMap(), snapshotReq.getSavePath());
     }
 
     /**
      * 获取截图
      */
-    public static ServerResponse getSnap(String host, String secret, Map<String, String> params) {
-        String s = doApi(host, secret, ApiConstants.GET_SNAP, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
-        });
+    public static String getSnap(String host, String secret, Map<String, String> params, String file) {
+        Path path = Paths.get(file);
+        boolean exists = Files.exists(path);
+        if (!exists) {
+            try {
+                Files.createFile(path);
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        return doApiImg(host, secret, ApiConstants.GET_SNAP, params, path.toFile());
     }
 
     /**
@@ -396,46 +443,64 @@ public class ZlmRestService {
 
     /**
      * 获取rtp推流信息
+     * 
+     * @param streamId RTP的ssrc，16进制字符串或者是流的id(openRtpServer接口指定)
      */
-    public static ServerResponse getRtpInfo(String host, String secret, Map<String, String> params) {
+    public static RtpInfo getRtpInfo(String host, String secret, String streamId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("stream_id", streamId);
         String s = doApi(host, secret, ApiConstants.GET_RTP_INFO, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<RtpInfo>() {
         });
+    }
+
+    public static OpenRtpServerResult openRtpServer(String host, String secret, OpenRtpServerReq req) {
+        return openRtpServer(host, secret, req.toMap());
     }
 
     /**
      * 创建RTP服务器
      */
-    public static ServerResponse openRtpServer(String host, String secret, Map<String, String> params) {
+    public static OpenRtpServerResult openRtpServer(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.OPEN_RTP_SERVER, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<OpenRtpServerResult>() {
         });
+    }
+
+    public static OpenRtpServerResult openRtpServerMultiplex(String host, String secret, OpenRtpServerReq req) {
+        return openRtpServerMultiplex(host, secret, req.toMap());
     }
 
     /**
      * 创建多路复用RTP服务器
      */
-    public static ServerResponse openRtpServerMultiplex(String host, String secret, Map<String, String> params) {
+    public static OpenRtpServerResult openRtpServerMultiplex(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.OPEN_RTP_SERVER_MULTIPLEX, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<OpenRtpServerResult>() {
         });
+    }
+
+    public static OpenRtpServerResult connectRtpServer(String host, String secret, ConnectRtpServerReq req) {
+        return connectRtpServer(host, secret, req.toMap());
     }
 
     /**
      * 连接RTP服务器
      */
-    public static ServerResponse connectRtpServer(String host, String secret, Map<String, String> params) {
+    public static OpenRtpServerResult connectRtpServer(String host, String secret, Map<String, String> params) {
         String s = doApi(host, secret, ApiConstants.CONNECT_RTP_SERVER, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<OpenRtpServerResult>() {
         });
     }
 
     /**
      * 关闭RTP服务器
      */
-    public static ServerResponse closeRtpServer(String host, String secret, Map<String, String> params) {
+    public static CloseRtpServerResult closeRtpServer(String host, String secret, String streamId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("stream_id", streamId);
         String s = doApi(host, secret, ApiConstants.CLOSE_RTP_SERVER, params);
-        return JSON.parseObject(s, new TypeReference<ServerResponse>() {
+        return JSON.parseObject(s, new TypeReference<CloseRtpServerResult>() {
         });
     }
 
@@ -565,14 +630,6 @@ public class ZlmRestService {
         });
     }
 
-
-    public static void main(String[] args) {
-//        ServerResponse zlm = getServerConfig(URL, SECRET);
-//        System.out.println(zlm);
-        ServerResponse<List<String>> version = getApiList(URL, SECRET, new HashMap<>());
-        System.out.println(version);
-    }
-
     public static String doApi(String host, String secret, String path, Map<String, String> params) {
         Assert.notNull(host, "host is null");
         Assert.notNull(path, "api is null");
@@ -583,4 +640,22 @@ public class ZlmRestService {
         return HttpUtils.doPostHander(host, path, new HashMap<>(), params, StringUtils.EMPTY);
     }
 
+    public static String doApiImg(String host, String secret, String path, Map<String, String> params, File file) {
+        Assert.notNull(host, "host is null");
+        Assert.notNull(path, "api is null");
+        Assert.notNull(secret, "secret is null");
+
+        params = Optional.ofNullable(params).orElse(new HashMap<>());
+        params.put("secret", secret);
+        ClassicHttpResponse classicHttpResponse = HttpUtils.doPost(host, path, new HashMap<>(), params, StringUtils.EMPTY);
+        if (classicHttpResponse == null) {
+            return null;
+        }
+        byte[] bytes = HttpUtils.checkResponseStreamAndGetResult(classicHttpResponse);
+        if (bytes == null) {
+            return null;
+        }
+        FileTools.write(bytes, file.getAbsolutePath());
+        return file.getAbsolutePath();
+    }
 }
