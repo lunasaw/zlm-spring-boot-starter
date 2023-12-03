@@ -4,3 +4,4 @@ io.github.lunasaw.zlm.config
 io.github.lunasaw.zlm.constant
 io.github.lunasaw.zlm.entity
 io.github.lunasaw.zlm.entity.req
+io.github.lunasaw.zlm.entity.rtp
