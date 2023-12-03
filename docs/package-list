@@ -5,3 +5,6 @@ io.github.lunasaw.zlm.constant
 io.github.lunasaw.zlm.entity
 io.github.lunasaw.zlm.entity.req
 io.github.lunasaw.zlm.entity.rtp
+io.github.lunasaw.zlm.hook.controller
+io.github.lunasaw.zlm.hook.param
+io.github.lunasaw.zlm.hook.service
