@@ -146,9 +146,6 @@ public class ApiConstants {
     /*停止 发送rtp*/
     public static final String STOP_SEND_RTP = API_INDEX + "/stopSendRtp";
 
-    /*获取版本信息*/
-    public static final String GET_VERSION = API_INDEX + "/version";
-
     /*获取拉流代理信息*/
     public static final String GET_PROXY_INFO = API_INDEX + "/getProxyInfo";
 
