@@ -20,12 +20,15 @@ import java.util.stream.Collectors;
 @Data
 public class ZlmProperties implements InitializingBean {
 
+    /**
+     * 对外NodeMap
+     */
     private Map<String, ZlmNodeConfig> nodeMap = new HashMap<>();
 
     private List<ZlmNodeConfig> nodes = new ArrayList<>();
 
     @Override
     public void afterPropertiesSet() {
-        nodeMap = nodes.stream().collect(Collectors.toMap(ZlmNodeConfig::getServerId, node -> node));
+        nodeMap = nodes.stream().filter(ZlmNodeConfig::isEnabled).collect(Collectors.toMap(ZlmNodeConfig::getServerId, node -> node));
     }
 }
