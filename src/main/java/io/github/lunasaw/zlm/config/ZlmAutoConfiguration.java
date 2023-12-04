@@ -20,7 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class ZlmAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(type = "zlmHookService")
+    @ConditionalOnMissingBean
     public ZlmHookService zlmHookService() {
         return new DefaultZlmHookServiceImpl();
     }
