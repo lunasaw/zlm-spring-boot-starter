@@ -4,7 +4,7 @@ import io.github.lunasaw.zlm.entity.ServerNodeConfig;
 import io.github.lunasaw.zlm.hook.param.*;
 
 /**
- * @author weidian
+ * @author luna
  * @version 1.0
  * @date 2023/12/3
  * @description:

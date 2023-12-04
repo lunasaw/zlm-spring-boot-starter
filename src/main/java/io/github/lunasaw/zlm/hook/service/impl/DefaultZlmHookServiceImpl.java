@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.stereotype.Service;
 
 /**
- * @author weidian
+ * @author luna
  * @version 1.0
  * @date 2023/12/3
  * @description: 默认的钩子服务实现
