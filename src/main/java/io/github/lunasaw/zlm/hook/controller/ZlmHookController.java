@@ -1,29 +1,27 @@
 package io.github.lunasaw.zlm.hook.controller;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import io.github.lunasaw.zlm.entity.ServerNodeConfig;
+import io.github.lunasaw.zlm.hook.param.*;
+import io.github.lunasaw.zlm.hook.service.ZlmHookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.web.bind.annotation.*;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
-
-import io.github.lunasaw.zlm.entity.ServerNodeConfig;
-import io.github.lunasaw.zlm.hook.param.*;
-import io.github.lunasaw.zlm.hook.service.ZlmHookService;
-
 /**
  * @author weidian
  * @version 1.0
  * @date 2023/12/3
- * @description:
+ * @description: ZLM钩子控制器
  */
 @RestController
 @RequestMapping("/index/hook/")
 public class ZlmHookController {
 
     @Autowired
-    private ZlmHookService    zlmHookService;
+    private ZlmHookService zlmHookService;
 
     @Qualifier("taskExecutor")
     @Autowired
@@ -38,8 +36,8 @@ public class ZlmHookController {
     @PostMapping(value = "/on_server_keepalive", produces = "application/json;charset=UTF-8")
     public HookResult onServerKeepalive(@RequestBody JSONObject param) {
         executor.execute(
-            () -> zlmHookService.onServerKeepLive(
-                JSON.parseObject(param.getJSONObject("data").toJSONString(), OnServerKeepaliveHookParam.class)));
+                () -> zlmHookService.onServerKeepLive(
+                        JSON.parseObject(param.getJSONObject("data").toJSONString(), OnServerKeepaliveHookParam.class)));
         return HookResult.SUCCESS();
     }
 
