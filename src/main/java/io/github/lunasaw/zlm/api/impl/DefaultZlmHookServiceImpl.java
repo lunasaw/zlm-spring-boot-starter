@@ -50,4 +50,9 @@ public class DefaultZlmHookServiceImpl implements ZlmHookService {
     @Override
     public void onSendRtpStopped(OnSendRtpStoppedHookParam param) {
     }
+
+    @Override
+    public void onRtpServerTimeout(OnRtpServerTimeoutHookParam param) {
+
+    }
 }

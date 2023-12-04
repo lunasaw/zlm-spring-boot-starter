@@ -55,4 +55,9 @@ public class ZlmHookServiceImpl implements ZlmHookService {
     public void onSendRtpStopped(OnSendRtpStoppedHookParam param) {
         log.info("onSendRtpStopped::param = {}", param);
     }
+
+    @Override
+    public void onRtpServerTimeout(OnRtpServerTimeoutHookParam param) {
+        log.info("onRtpServerTimeout::param = {}", param);
+    }
 }

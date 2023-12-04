@@ -26,4 +26,6 @@ public interface ZlmHookService {
     void onServerStarted(ServerNodeConfig param);
 
     void onSendRtpStopped(OnSendRtpStoppedHookParam param);
+
+    void onRtpServerTimeout(OnRtpServerTimeoutHookParam param);
 }

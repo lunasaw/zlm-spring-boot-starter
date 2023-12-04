@@ -111,4 +111,15 @@ public class ZlmHookController {
         executor.execute(() -> zlmHookService.onSendRtpStopped(param));
         return HookResult.SUCCESS();
     }
+
+
+    /**
+     * rtpServer收流超时
+     */
+    @ResponseBody
+    @PostMapping(value = "/on_rtp_server_timeout", produces = "application/json;charset=UTF-8")
+    public HookResult onRtpServerTimeout(@RequestBody OnRtpServerTimeoutHookParam param) {
+        executor.execute(() -> zlmHookService.onRtpServerTimeout(param));
+        return HookResult.SUCCESS();
+    }
 }
