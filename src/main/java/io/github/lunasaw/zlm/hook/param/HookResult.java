@@ -1,14 +1,26 @@
 package io.github.lunasaw.zlm.hook.param;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 @Data
 public class HookResult {
 
-    private int    code;
+
+    /**
+     * 错误代码，0代表允许推流
+     */
+    @JSONField(name = "code")
+    private int code;
+
+    /**
+     * 不允许推流时的错误提示
+     */
+    @JSONField(name = "msg")
     private String msg;
 
-    public HookResult() {}
+    public HookResult() {
+    }
 
     public HookResult(int code, String msg) {
         this.code = code;

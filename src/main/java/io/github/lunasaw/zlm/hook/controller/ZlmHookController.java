@@ -84,6 +84,7 @@ public class ZlmHookController {
 
     /**
      * 流未找到事件，用户可以在此事件触发时，立即去拉流，这样可以实现按需拉流；此事件对回复不敏感。
+     * @return code    int	错误代码，0代表允许播放 msg	string	不允许播放时的错误提示
      */
     @ResponseBody
     @PostMapping(value = "/on_stream_not_found", produces = "application/json;charset=UTF-8")
@@ -115,6 +116,7 @@ public class ZlmHookController {
 
     /**
      * rtpServer收流超时
+     * 调用openRtpServer 接口，rtp server 长时间未收到数据,执行此web hook,对回复不敏感
      */
     @ResponseBody
     @PostMapping(value = "/on_rtp_server_timeout", produces = "application/json;charset=UTF-8")

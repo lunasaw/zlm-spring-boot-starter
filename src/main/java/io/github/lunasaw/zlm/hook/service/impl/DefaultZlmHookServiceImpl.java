@@ -1,9 +1,10 @@
-package io.github.lunasaw.zlm.api.impl;
+package io.github.lunasaw.zlm.hook.service.impl;
 
 import io.github.lunasaw.zlm.entity.ServerNodeConfig;
 import io.github.lunasaw.zlm.hook.param.*;
 import io.github.lunasaw.zlm.hook.service.ZlmHookService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
  * @description: 默认的钩子服务实现
  */
 @Slf4j
-@Service
 public class DefaultZlmHookServiceImpl implements ZlmHookService {
     @Override
     public void onServerKeepLive(OnServerKeepaliveHookParam param) {
