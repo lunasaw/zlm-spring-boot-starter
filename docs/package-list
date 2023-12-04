@@ -1,6 +1,5 @@
 io.github.lunasaw.zlm
 io.github.lunasaw.zlm.api
-io.github.lunasaw.zlm.api.impl
 io.github.lunasaw.zlm.config
 io.github.lunasaw.zlm.constant
 io.github.lunasaw.zlm.entity
@@ -9,3 +8,4 @@ io.github.lunasaw.zlm.entity.rtp
 io.github.lunasaw.zlm.hook.controller
 io.github.lunasaw.zlm.hook.param
 io.github.lunasaw.zlm.hook.service
+io.github.lunasaw.zlm.hook.service.impl
