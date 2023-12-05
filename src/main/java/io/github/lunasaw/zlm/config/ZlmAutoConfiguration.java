@@ -1,7 +1,7 @@
 package io.github.lunasaw.zlm.config;
 
-import io.github.lunasaw.zlm.hook.service.impl.DefaultZlmHookServiceImpl;
 import io.github.lunasaw.zlm.hook.service.ZlmHookService;
+import io.github.lunasaw.zlm.hook.service.impl.DefaultZlmHookServiceImpl;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

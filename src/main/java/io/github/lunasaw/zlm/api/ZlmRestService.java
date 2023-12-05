@@ -1,5 +1,20 @@
 package io.github.lunasaw.zlm.api;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.TypeReference;
+import com.google.common.collect.Maps;
+import com.luna.common.check.Assert;
+import com.luna.common.file.FileTools;
+import com.luna.common.net.HttpUtils;
+import io.github.lunasaw.zlm.constant.ApiConstants;
+import io.github.lunasaw.zlm.entity.*;
+import io.github.lunasaw.zlm.entity.req.MediaReq;
+import io.github.lunasaw.zlm.entity.req.RecordReq;
+import io.github.lunasaw.zlm.entity.req.SnapshotReq;
+import io.github.lunasaw.zlm.entity.rtp.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,26 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.TypeReference;
-import com.google.common.collect.Maps;
-import com.luna.common.check.Assert;
-import com.luna.common.file.FileTools;
-import com.luna.common.net.HttpUtils;
-
-import io.github.lunasaw.zlm.config.ZlmProperties;
-import io.github.lunasaw.zlm.constant.ApiConstants;
-import io.github.lunasaw.zlm.entity.*;
-import io.github.lunasaw.zlm.entity.req.MediaReq;
-import io.github.lunasaw.zlm.entity.req.RecordReq;
-import io.github.lunasaw.zlm.entity.req.SnapshotReq;
-import io.github.lunasaw.zlm.entity.rtp.*;
 
 /**
  * @author luna
@@ -40,6 +35,7 @@ public class ZlmRestService {
 
     private static final String URL = "http://127.0.0.1:9092";
     private static final String SECRET = "zlm";
+
     /**
      * 获取版本信息
      */
@@ -47,6 +43,10 @@ public class ZlmRestService {
         String s = doApi(host, secret, ApiConstants.GET_VERSION, new HashMap<>());
         return JSON.parseObject(s, new TypeReference<ServerResponse<Version>>() {
         });
+    }
+
+    public static ServerResponse<List<String>> getApiList(String host, String secret) {
+        return getApiList(host, secret, new HashMap<>());
     }
 
     /**
@@ -154,7 +154,7 @@ public class ZlmRestService {
      * @param host
      * @param secret
      * @param localPort 筛选本机端口，例如筛选rtsp链接：554
-     * @param peerIp 筛选客户端ip
+     * @param peerIp    筛选客户端ip
      * @return
      */
     public static ServerResponse<List<TcpLink>> getAllSession(String host, String secret, String localPort, String peerIp) {
@@ -439,7 +439,7 @@ public class ZlmRestService {
 
     /**
      * 获取rtp推流信息
-     * 
+     *
      * @param streamId RTP的ssrc，16进制字符串或者是流的id(openRtpServer接口指定)
      */
     public static RtpInfoResult getRtpInfo(String host, String secret, String streamId) {

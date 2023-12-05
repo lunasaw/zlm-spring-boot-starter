@@ -7,10 +7,21 @@
 
 ZLMediaKit的spring-boot starter, 对[ZLMediaKit](https://github.com/ZLMediaKit/ZLMediaKit)的API进行了封装，方便使用。支持集群化管理。
 
-[文档链接](https://github.com/lunasaw/zlm-spring-boot-starter/blob/master/zlm-api.md)
+[文档链接](https://github.com/lunasaw/zlm-spring-boot-starter/blob/master/zlm-api.md) [API文档](https://lunasaw.github.io/zlm-spring-boot-starter/)
 
-[API文档](https://lunasaw.github.io/zlm-spring-boot-starter/)
-![img.png](images/img.png)
+### 快速开始
+
+Hook接口使用类似io.github.lunasaw.zlm.service.LocalZlmHookService，实现ZlmHookService接口，重写方法，即可实现对ZLM的管理，或者继承AbstractZlmHookService，重写需要的方法
+**默认实现了ZlmHookService接口的所有方法，均为放通默认返回，可以根据需要重写**
+
+
+> ![img.png](img.png)
+
+普通api接口使用直接静态方法调用io.github.lunasaw.zlm.api.ZlmRestService
+
+> ![img.png](images/img.png)
+
+```yaml
 
 > 引入spring-boot-starter
 
