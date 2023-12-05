@@ -82,6 +82,7 @@ public class ZlmHookController {
 
     /**
      * 流未找到事件，用户可以在此事件触发时，立即去拉流，这样可以实现按需拉流；此事件对回复不敏感。
+     *
      * @return code    int	错误代码，0代表允许播放 msg	string	不允许播放时的错误提示
      */
     @ResponseBody
@@ -161,5 +162,20 @@ public class ZlmHookController {
     public HookResultForOnRtspAuth onRtspAuth(@RequestBody OnRtspAuthHookParam param) {
         return zlmHookService.onRtspAuth(param);
     }
+
+    /**
+     * 流量统计事件，播放器或推流器断开时并且耗用流量超过特定阈值时会触发此事件，
+     * 阈值通过配置文件general.flowThreshold配置；此事件对回复不敏感。
+     *
+     * @param param
+     * @return
+     */
+    @ResponseBody
+    @PostMapping(value = "/on_flow_report", produces = "application/json;charset=UTF-8")
+    public HookResult onFlowReport(@RequestBody OnFlowReportHookParam param) {
+        executor.execute(() -> zlmHookService.onFlowReport(param));
+        return HookResult.SUCCESS();
+    }
+
 
 }

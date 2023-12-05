@@ -56,6 +56,21 @@ public class DefaultZlmHookServiceImpl implements ZlmHookService {
 
     @Override
     public HookResultForOnHttpAccess onHttpAccess(OnHttpAccessParam param) {
-        return new HookResultForOnHttpAccess(0, "", param.getMediaServerId());
+        return HookResultForOnHttpAccess.SUCCESS();
+    }
+
+    @Override
+    public HookResultForOnRtspRealm onRtspRealm(OnRtspRealmHookParam param) {
+        return HookResultForOnRtspRealm.SUCCESS();
+    }
+
+    @Override
+    public HookResultForOnRtspAuth onRtspAuth(OnRtspAuthHookParam param) {
+        return HookResultForOnRtspAuth.SUCCESS();
+    }
+
+    @Override
+    public void onFlowReport(OnFlowReportHookParam param) {
+
     }
 }

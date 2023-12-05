@@ -19,6 +19,7 @@ public class HookResultForOnRtspAuth extends HookResult {
 
     /**
      * 密码
+     * 用户密码明文或摘要(md5(username:realm:password))
      */
     @JSONField(name = "passwd")
     @JsonProperty("passwd")
@@ -26,6 +27,13 @@ public class HookResultForOnRtspAuth extends HookResult {
 
     // getters and setters...
 
+    public static HookResultForOnRtspAuth SUCCESS() {
+        return new HookResultForOnRtspAuth();
+    }
+
+
+    public HookResultForOnRtspAuth() {
+    }
 
     public HookResultForOnRtspAuth(boolean encrypted, String passwd) {
         super(0, "");

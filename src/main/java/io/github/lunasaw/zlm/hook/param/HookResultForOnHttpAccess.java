@@ -31,20 +31,9 @@ public class HookResultForOnHttpAccess extends HookResult {
     @JsonProperty("second")
     private int second = 600;
 
-    /**
-     * 服务器id,通过配置文件设置
-     */
-    @JSONField(name = "mediaServerId")
-    @JsonProperty("mediaServerId")
-    private String mediaServerId;
 
-    public HookResultForOnHttpAccess(int code, String msg, String mediaServerId) {
-        super(code, msg);
-        this.mediaServerId = mediaServerId;
-    }
-
-    public static HookResultForOnHttpAccess SUCCESS(String mediaServerId) {
-        return new HookResultForOnHttpAccess(0, "", mediaServerId);
+    public static HookResultForOnHttpAccess SUCCESS() {
+        return new HookResultForOnHttpAccess();
     }
 }
 
