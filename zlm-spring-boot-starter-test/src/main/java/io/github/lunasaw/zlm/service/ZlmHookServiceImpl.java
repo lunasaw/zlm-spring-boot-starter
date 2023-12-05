@@ -62,8 +62,8 @@ public class ZlmHookServiceImpl implements ZlmHookService {
     }
 
     @Override
-    public HookResultOnHttpAccess onHttpAccess(OnHttpAccessParam param) {
+    public HookResultForOnHttpAccess onHttpAccess(OnHttpAccessParam param) {
         log.info("onHttpAccess::param = {}", param);
-        return HookResultOnHttpAccess.SUCCESS(param.getMediaServerId());
+        return HookResultForOnHttpAccess.SUCCESS(param.getMediaServerId());
     }
 }

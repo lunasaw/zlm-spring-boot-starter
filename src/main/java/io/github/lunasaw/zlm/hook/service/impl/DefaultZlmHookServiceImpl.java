@@ -4,8 +4,6 @@ import io.github.lunasaw.zlm.entity.ServerNodeConfig;
 import io.github.lunasaw.zlm.hook.param.*;
 import io.github.lunasaw.zlm.hook.service.ZlmHookService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Service;
 
 /**
  * @author luna
@@ -57,7 +55,7 @@ public class DefaultZlmHookServiceImpl implements ZlmHookService {
     }
 
     @Override
-    public HookResultOnHttpAccess onHttpAccess(OnHttpAccessParam param) {
-        return new HookResultOnHttpAccess(0, "", param.getMediaServerId());
+    public HookResultForOnHttpAccess onHttpAccess(OnHttpAccessParam param) {
+        return new HookResultForOnHttpAccess(0, "", param.getMediaServerId());
     }
 }

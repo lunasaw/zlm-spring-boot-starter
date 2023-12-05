@@ -131,8 +131,35 @@ public class ZlmHookController {
      */
     @ResponseBody
     @PostMapping(value = "/on_http_access", produces = "application/json;charset=UTF-8")
-    public HookResultOnHttpAccess onHttpAccess(@RequestBody OnHttpAccessParam param) {
+    public HookResultForOnHttpAccess onHttpAccess(@RequestBody OnHttpAccessParam param) {
         return zlmHookService.onHttpAccess(param);
+    }
+
+
+    /**
+     * 该rtsp流是否开启rtsp专用方式的鉴权事件，开启后才会触发on_rtsp_auth事件。
+     * <p>
+     * 需要指出的是rtsp也支持url参数鉴权，它支持两种方式鉴权。
+     *
+     * @param param
+     * @return
+     */
+    @ResponseBody
+    @PostMapping(value = "/on_rtsp_realm", produces = "application/json;charset=UTF-8")
+    public HookResultForOnRtspRealm onRtspRealm(@RequestBody OnRtspRealmHookParam param) {
+        return zlmHookService.onRtspRealm(param);
+    }
+
+    /**
+     * rtsp专用的鉴权事件，先触发on_rtsp_realm事件然后才会触发on_rtsp_auth事件。
+     *
+     * @param param
+     * @return
+     */
+    @ResponseBody
+    @PostMapping(value = "/on_rtsp_auth", produces = "application/json;charset=UTF-8")
+    public HookResultForOnRtspAuth onRtspAuth(@RequestBody OnRtspAuthHookParam param) {
+        return zlmHookService.onRtspAuth(param);
     }
 
 }

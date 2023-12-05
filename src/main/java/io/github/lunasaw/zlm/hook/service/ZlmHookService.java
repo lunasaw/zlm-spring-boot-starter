@@ -29,5 +29,9 @@ public interface ZlmHookService {
 
     void onRtpServerTimeout(OnRtpServerTimeoutHookParam param);
 
-    HookResultOnHttpAccess onHttpAccess(OnHttpAccessParam param);
+    HookResultForOnHttpAccess onHttpAccess(OnHttpAccessParam param);
+
+    HookResultForOnRtspRealm onRtspRealm(OnRtspRealmHookParam param);
+
+    HookResultForOnRtspAuth onRtspAuth(OnRtspAuthHookParam param);
 }

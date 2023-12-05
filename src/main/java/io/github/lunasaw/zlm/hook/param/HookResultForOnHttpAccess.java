@@ -8,7 +8,7 @@ import lombok.Data;
  * Java 类表示
  */
 @Data
-public class HookResultOnHttpAccess extends HookResult {
+public class HookResultForOnHttpAccess extends HookResult {
 
     /**
      * 不允许访问的错误提示，允许访问请置空
@@ -38,13 +38,13 @@ public class HookResultOnHttpAccess extends HookResult {
     @JsonProperty("mediaServerId")
     private String mediaServerId;
 
-    public HookResultOnHttpAccess(int code, String msg, String mediaServerId) {
+    public HookResultForOnHttpAccess(int code, String msg, String mediaServerId) {
         super(code, msg);
         this.mediaServerId = mediaServerId;
     }
 
-    public static HookResultOnHttpAccess SUCCESS(String mediaServerId) {
-        return new HookResultOnHttpAccess(0, "", mediaServerId);
+    public static HookResultForOnHttpAccess SUCCESS(String mediaServerId) {
+        return new HookResultForOnHttpAccess(0, "", mediaServerId);
     }
 }
 
