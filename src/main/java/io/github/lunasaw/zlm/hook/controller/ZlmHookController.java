@@ -34,10 +34,8 @@ public class ZlmHookController {
      * @return
      */
     @PostMapping(value = "/on_server_keepalive", produces = "application/json;charset=UTF-8")
-    public HookResult onServerKeepalive(@RequestBody JSONObject param) {
-        executor.execute(
-                () -> zlmHookService.onServerKeepLive(
-                        JSON.parseObject(param.getJSONObject("data").toJSONString(), OnServerKeepaliveHookParam.class)));
+    public HookResult onServerKeepalive(@RequestBody OnServerKeepaliveHookParam param) {
+        executor.execute(() -> zlmHookService.onServerKeepLive(param));
         return HookResult.SUCCESS();
     }
 
@@ -124,4 +122,17 @@ public class ZlmHookController {
         executor.execute(() -> zlmHookService.onRtpServerTimeout(param));
         return HookResult.SUCCESS();
     }
+
+    /**
+     * 访问http文件服务器上hls之外的文件时触发。结果会被缓存Cookie
+     *
+     * @param param
+     * @return
+     */
+    @ResponseBody
+    @PostMapping(value = "/on_http_access", produces = "application/json;charset=UTF-8")
+    public HookResultOnHttpAccess onHttpAccess(@RequestBody OnHttpAccessParam param) {
+        return zlmHookService.onHttpAccess(param);
+    }
+
 }

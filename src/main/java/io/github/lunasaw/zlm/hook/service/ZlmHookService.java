@@ -28,4 +28,6 @@ public interface ZlmHookService {
     void onSendRtpStopped(OnSendRtpStoppedHookParam param);
 
     void onRtpServerTimeout(OnRtpServerTimeoutHookParam param);
+
+    HookResultOnHttpAccess onHttpAccess(OnHttpAccessParam param);
 }

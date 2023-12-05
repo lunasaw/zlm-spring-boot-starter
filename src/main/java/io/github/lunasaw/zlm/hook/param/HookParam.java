@@ -1,13 +1,15 @@
 package io.github.lunasaw.zlm.hook.param;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * zlm hook事件的参数
  * 
  * @author luna
  */
-@Data
+@Getter
+@Setter
 public class HookParam {
     private String mediaServerId;
 

@@ -55,4 +55,9 @@ public class DefaultZlmHookServiceImpl implements ZlmHookService {
     public void onRtpServerTimeout(OnRtpServerTimeoutHookParam param) {
 
     }
+
+    @Override
+    public HookResultOnHttpAccess onHttpAccess(OnHttpAccessParam param) {
+        return new HookResultOnHttpAccess(0, "", param.getMediaServerId());
+    }
 }

@@ -60,4 +60,10 @@ public class ZlmHookServiceImpl implements ZlmHookService {
     public void onRtpServerTimeout(OnRtpServerTimeoutHookParam param) {
         log.info("onRtpServerTimeout::param = {}", param);
     }
+
+    @Override
+    public HookResultOnHttpAccess onHttpAccess(OnHttpAccessParam param) {
+        log.info("onHttpAccess::param = {}", param);
+        return HookResultOnHttpAccess.SUCCESS(param.getMediaServerId());
+    }
 }

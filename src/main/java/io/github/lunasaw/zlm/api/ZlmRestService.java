@@ -36,7 +36,6 @@ import io.github.lunasaw.zlm.entity.rtp.*;
  * @date 2023/12/2
  * @description: zlm rest api
  */
-@Service
 public class ZlmRestService {
 
     private static final String URL = "http://127.0.0.1:9092";
