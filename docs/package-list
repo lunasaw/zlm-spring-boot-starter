@@ -9,3 +9,4 @@ io.github.lunasaw.zlm.hook.controller
 io.github.lunasaw.zlm.hook.param
 io.github.lunasaw.zlm.hook.service
 io.github.lunasaw.zlm.hook.service.impl
+io.github.lunasaw.zlm.node
