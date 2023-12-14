@@ -73,4 +73,9 @@ public abstract class AbstractZlmHookService implements ZlmHookService {
     public void onFlowReport(OnFlowReportHookParam param) {
 
     }
+
+    @Override
+    public void onServerExited(HookParam param) {
+
+    }
 }

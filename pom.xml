@@ -6,7 +6,7 @@
 
     <groupId>io.github.lunasaw</groupId>
     <artifactId>zlm-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>zlm-spring-boot-starter</name>
     <description>ZLMediaKit restful api and hook starter</description>
@@ -17,11 +17,11 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <spring-boot.version>2.7.18</spring-boot.version>
-        <luna-common.version>2.5.2</luna-common.version>
+        <luna-common.version>2.5.3</luna-common.version>
         <httpclient5.version>5.2.1</httpclient5.version>
         <github.username>lunasaw</github.username>
         <app.profiles>${project.name}</app.profiles>
-        <zlm-spring-boot-starter.version>1.0.0</zlm-spring-boot-starter.version>
+        <zlm-spring-boot-starter.version>1.0.1</zlm-spring-boot-starter.version>
     </properties>
 
     <developers>

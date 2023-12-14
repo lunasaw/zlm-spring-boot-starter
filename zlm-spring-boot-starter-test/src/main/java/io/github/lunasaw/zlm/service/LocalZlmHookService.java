@@ -83,4 +83,9 @@ public class LocalZlmHookService extends AbstractZlmHookService {
     public void onFlowReport(OnFlowReportHookParam param) {
         log.info("onFlowReport::param = {}", JSON.toJSONString(param));
     }
+
+    @Override
+    public void onServerExited(HookParam param) {
+        log.info("onServerExited::param = {}", param);
+    }
 }

@@ -36,4 +36,6 @@ public interface ZlmHookService {
     HookResultForOnRtspAuth onRtspAuth(OnRtspAuthHookParam param);
 
     void onFlowReport(OnFlowReportHookParam param);
+
+    void onServerExited(HookParam param);
 }
