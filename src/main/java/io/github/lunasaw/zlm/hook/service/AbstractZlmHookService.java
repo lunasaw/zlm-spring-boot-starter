@@ -78,4 +78,9 @@ public abstract class AbstractZlmHookService implements ZlmHookService {
     public void onServerExited(HookParam param) {
 
     }
+
+    @Override
+    public void onRecordMp4(OnRecordMp4HookParam param) {
+
+    }
 }

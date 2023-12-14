@@ -186,5 +186,11 @@ public class ZlmHookController {
         return HookResult.SUCCESS();
     }
 
+    @ResponseBody
+    @PostMapping(value = "/on_record_mp4", produces = "application/json;charset=UTF-8")
+    public HookResult onRecordMp4(@RequestBody OnRecordMp4HookParam param) {
+        executor.execute(() -> zlmHookService.onRecordMp4(param));
+        return HookResult.SUCCESS();
+    }
 
 }
