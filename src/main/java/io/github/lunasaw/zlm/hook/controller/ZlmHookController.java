@@ -99,8 +99,10 @@ public class ZlmHookController {
      */
     @ResponseBody
     @PostMapping(value = "/on_server_started", produces = "application/json;charset=UTF-8")
-    public HookResult onServerStarted(@RequestBody JSONObject param) {
-        executor.execute(() -> zlmHookService.onServerStarted(JSON.parseObject(param.toJSONString(), ServerNodeConfig.class)));
+    public HookResult onServerStarted(@RequestBody ServerNodeConfig param) {
+        log.info("onServerStarted::param = {}", param);
+        // executor.execute(() -> zlmHookService.onServerStarted(JSON.parseObject(param.toJSONString(),
+        // ServerNodeConfig.class)));
         return HookResult.SUCCESS();
     }
 
