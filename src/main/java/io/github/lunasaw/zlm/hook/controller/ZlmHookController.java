@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import io.github.lunasaw.zlm.entity.ServerNodeConfig;
 import io.github.lunasaw.zlm.hook.param.*;
 import io.github.lunasaw.zlm.hook.service.ZlmHookService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2023/12/3
  * @description: ZLM钩子控制器
  */
+@Slf4j
 @RestController
 @ConditionalOnProperty(value = "zlm.hook-enable", havingValue = "true")
 @RequestMapping("/index/hook/")
@@ -99,8 +101,17 @@ public class ZlmHookController {
      */
     @ResponseBody
     @PostMapping(value = "/on_server_started", produces = "application/json;charset=UTF-8")
-    public HookResult onServerStarted(@RequestBody JSONObject param) {
-        executor.execute(() -> zlmHookService.onServerStarted(JSON.parseObject(param.toJSONString(), ServerNodeConfig.class)));
+    public HookResult onServerStarted(@RequestBody ServerNodeConfig param) {
+        log.info("onServerStarted::param = {}", param);
+        // executor.execute(() -> zlmHookService.onServerStarted(JSON.parseObject(param.toJSONString(),
+        // ServerNodeConfig.class)));
+        return HookResult.SUCCESS();
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/on_server_exited", produces = "application/json;charset=UTF-8")
+    public HookResult onServerExited(@RequestBody HookParam param) {
+        executor.execute(() -> zlmHookService.onServerExited(param));
         return HookResult.SUCCESS();
     }
 
@@ -179,5 +190,11 @@ public class ZlmHookController {
         return HookResult.SUCCESS();
     }
 
+    @ResponseBody
+    @PostMapping(value = "/on_record_mp4", produces = "application/json;charset=UTF-8")
+    public HookResult onRecordMp4(@RequestBody OnRecordMp4HookParam param) {
+        executor.execute(() -> zlmHookService.onRecordMp4(param));
+        return HookResult.SUCCESS();
+    }
 
 }

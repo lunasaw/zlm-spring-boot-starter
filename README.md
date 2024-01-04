@@ -15,7 +15,7 @@ Hook接口使用类似io.github.lunasaw.zlm.service.LocalZlmHookService，实现
 **默认实现了ZlmHookService接口的所有方法，均为放通默认返回，可以根据需要重写**
 
 
-> ![img.png](img.png)
+> ![img.png](images/restapi.png)
 
 普通api接口使用直接静态方法调用io.github.lunasaw.zlm.api.ZlmRestService
 
