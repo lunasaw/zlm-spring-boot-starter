@@ -7,6 +7,7 @@ import io.github.lunasaw.zlm.hook.param.*;
 import io.github.lunasaw.zlm.hook.service.ZlmHookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @description: ZLM钩子控制器
  */
 @RestController
+@ConditionalOnProperty(value = "zlm.hook-enable", havingValue = "true")
 @RequestMapping("/index/hook/")
 public class ZlmHookController {
 

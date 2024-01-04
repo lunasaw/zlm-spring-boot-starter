@@ -27,6 +27,8 @@ public class ZlmProperties implements InitializingBean {
 
     private List<ZlmNodeConfig> nodes = new ArrayList<>();
 
+    private boolean enable = true;
+
     @Override
     public void afterPropertiesSet() {
         nodeMap = nodes.stream().filter(ZlmNodeConfig::isEnabled).collect(Collectors.toMap(ZlmNodeConfig::getServerId, node -> node));

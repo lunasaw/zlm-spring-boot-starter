@@ -15,13 +15,5 @@ import java.util.Map;
 @Service
 public class NodeService {
 
-    @Autowired
-    private ZlmProperties zlmProperties;
-
-    public void addNode(String host, String secret) {
-        Map<String, ZlmNodeConfig> nodeMap = zlmProperties.getNodeMap();
-
-//        ZlmRestService.getv
-    }
 
 }

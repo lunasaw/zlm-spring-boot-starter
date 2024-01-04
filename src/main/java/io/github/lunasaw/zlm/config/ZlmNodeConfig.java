@@ -30,4 +30,6 @@ public class ZlmNodeConfig {
      * Whether enable this host.
      */
     private boolean enabled = true;
+
+    private boolean hookEnabled = true;
 }
