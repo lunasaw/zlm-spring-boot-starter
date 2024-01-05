@@ -8,15 +8,15 @@ import lombok.Getter;
 
 @Getter
 public enum LoadBalancerEnums {
-    RANDOM(0, "Random"),
+    RANDOM(1, "Random"),
 
-    ROUND_ROBIN(0, "RoundRobin"),
+    ROUND_ROBIN(2, "RoundRobin"),
 
-    CONSISTENT_HASHING(0, "ConsistentHashing"),
+    CONSISTENT_HASHING(3, "ConsistentHashing"),
 
-    WEIGHT_ROUND_ROBIN(0, "WeightRoundRobin"),
+    WEIGHT_ROUND_ROBIN(4, "WeightRoundRobin"),
 
-    WEIGHT_RANDOM(0, "WeightRandom");
+    WEIGHT_RANDOM(5, "WeightRandom");
 
     private int code;
     private String type;

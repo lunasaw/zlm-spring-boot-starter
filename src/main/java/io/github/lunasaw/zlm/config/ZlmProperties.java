@@ -1,5 +1,6 @@
 package io.github.lunasaw.zlm.config;
 
+import io.github.lunasaw.zlm.enums.LoadBalancerEnums;
 import lombok.Data;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -29,7 +30,7 @@ public class ZlmProperties implements InitializingBean {
 
     private boolean enable = true;
 
-    private String balance = "WEIGHT_ROUND_ROBIN";
+    private LoadBalancerEnums balance = LoadBalancerEnums.ROUND_ROBIN;
 
     public static void addNode(ZlmNode zlmNode) {
         if (zlmNode != null) {
