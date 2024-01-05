@@ -9,7 +9,7 @@ import lombok.Data;
  * @description: zlm节点配置
  */
 @Data
-public class ZlmNodeConfig {
+public class ZlmNode {
 
     /**
      * The id of this node.
@@ -31,5 +31,13 @@ public class ZlmNodeConfig {
      */
     private boolean enabled = true;
 
+    /**
+     * Whether enable hook.
+     */
     private boolean hookEnabled = true;
+
+    /**
+     * The weight of this host.
+     */
+    private int weight = 100;
 }
