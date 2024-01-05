@@ -6,3 +6,4 @@ zlm:
       secret: zlm
       enabled: true
       hook-enabled: true
+  balance: round_robin
