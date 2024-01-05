@@ -6,7 +6,7 @@
 
     <groupId>io.github.lunasaw</groupId>
     <artifactId>zlm-spring-boot-starter</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <name>zlm-spring-boot-starter</name>
     <description>ZLMediaKit restful api and hook starter</description>
@@ -21,7 +21,7 @@
         <httpclient5.version>5.2.1</httpclient5.version>
         <github.username>lunasaw</github.username>
         <app.profiles>${project.name}</app.profiles>
-        <zlm-spring-boot-starter.version>1.0.2</zlm-spring-boot-starter.version>
+        <zlm-spring-boot-starter.version>1.0.3</zlm-spring-boot-starter.version>
     </properties>
 
     <developers>
