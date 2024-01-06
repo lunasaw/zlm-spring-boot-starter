@@ -32,6 +32,7 @@ public class ZlmProperties implements InitializingBean {
 
     private LoadBalancerEnums balance = LoadBalancerEnums.ROUND_ROBIN;
 
+
     public static void addNode(ZlmNode zlmNode) {
         if (zlmNode != null) {
             nodes.add(zlmNode);

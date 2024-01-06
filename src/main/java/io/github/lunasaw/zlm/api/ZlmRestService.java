@@ -33,8 +33,6 @@ import java.util.Optional;
  */
 public class ZlmRestService {
 
-    private static final String URL = "http://127.0.0.1:9092";
-    private static final String SECRET = "zlm";
 
     /**
      * 获取版本信息
