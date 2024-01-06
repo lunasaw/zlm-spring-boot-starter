@@ -15,11 +15,17 @@ import org.springframework.stereotype.Service;
 public class NodeService {
 
     @Autowired
+    private ZlmProperties zlmProperties;
+
+    @Autowired
     private LoadBalancer loadBalancer;
 
-
     public void addNode(ZlmNode zlmNode) {
-        ZlmProperties.addNode(zlmNode);
+        if (zlmNode != null) {
+            zlmProperties.getNodes().add(zlmNode);
+            zlmProperties.getNodeMap().put(zlmNode.getServerId(), zlmNode);
+        }
+        loadBalancer.init();
     }
 
     public ZlmNode selectNode() {

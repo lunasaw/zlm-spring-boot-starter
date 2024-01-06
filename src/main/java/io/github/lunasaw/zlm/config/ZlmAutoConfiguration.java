@@ -42,7 +42,7 @@ public class ZlmAutoConfiguration {
             case ROUND_ROBIN:
                 return new RoundRobinLoadBalancer();
             case CONSISTENT_HASHING:
-                return new ConsistentHashingLoadBalander();
+                return new ConsistentHashingLoadBalancer();
             case WEIGHT_RANDOM:
                 return new WeightRandomLoadBalancer();
             case WEIGHT_ROUND_ROBIN:

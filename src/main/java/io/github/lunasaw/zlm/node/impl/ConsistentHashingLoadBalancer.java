@@ -12,27 +12,15 @@ import java.util.TreeMap;
  * @author luna
  * @date 2024/1/5
  */
-public class ConsistentHashingLoadBalander implements LoadBalancer {
+public class ConsistentHashingLoadBalancer implements LoadBalancer {
 
     static final TreeMap<Integer, String> VIRTUAL_NODE_MAP = new TreeMap<>();
 
-    public ConsistentHashingLoadBalander() {
+    public ConsistentHashingLoadBalancer() {
         init();
     }
 
-    public static void init() {
-        for (String nodeName : ZlmProperties.nodeMap.keySet()) {
-            ZlmNode nodeConfig = ZlmProperties.nodeMap.get(nodeName);
-            int weight = nodeConfig.getWeight();
-            for (int i = 0; i < weight * 10; i++) {
-                String virtualNodeName = nodeName + "#" + i;
-                int hash = getHash(virtualNodeName);
-                VIRTUAL_NODE_MAP.put(hash, virtualNodeName);
-            }
-        }
-    }
-
-    private static int getHash(String str) {
+    private int getHash(String str) {
         final int p = 16777619;
         int hash = (int) 2166136261L;
         for (int i = 0; i < str.length(); i++) {
@@ -44,6 +32,18 @@ public class ConsistentHashingLoadBalander implements LoadBalancer {
         hash ^= hash >> 17;
         hash += hash << 5;
         return hash;
+    }
+
+    public void init() {
+        for (String nodeName : ZlmProperties.nodeMap.keySet()) {
+            ZlmNode nodeConfig = ZlmProperties.nodeMap.get(nodeName);
+            int weight = nodeConfig.getWeight();
+            for (int i = 0; i < weight * 10; i++) {
+                String virtualNodeName = nodeName + "#" + i;
+                int hash = getHash(virtualNodeName);
+                VIRTUAL_NODE_MAP.put(hash, virtualNodeName);
+            }
+        }
     }
 
     @Override
