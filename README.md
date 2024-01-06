@@ -14,6 +14,18 @@ ZLMediaKit的spring-boot starter, 对[ZLMediaKit](https://github.com/ZLMediaKit/
 Hook接口使用类似io.github.lunasaw.zlm.service.LocalZlmHookService，实现ZlmHookService接口，重写方法，即可实现对ZLM的管理，或者继承AbstractZlmHookService，重写需要的方法
 **默认实现了ZlmHookService接口的所有方法，均为放通默认返回，可以根据需要重写**
 
+```yaml
+zlm:
+  enable: true # 是否启用，未启用不会加载
+  balance: round_robin # 节点负载均衡算法，默认round_robin
+  nodes: # zlm节点列表，每个节点配置如下
+    - server-id: zlm # 节点ID，可自定义
+      host: "http://127.0.0.1:9092" # 节点地址
+      secret: zlm # 节点密钥
+      enabled: true # 节点是否启用
+      hook-enabled: true # 节点是否启用hook接口，启用hook 会注入hook接口，默认true，需要注意拦截器放通
+
+```
 
 > ![img.png](images/restapi.png)
 
