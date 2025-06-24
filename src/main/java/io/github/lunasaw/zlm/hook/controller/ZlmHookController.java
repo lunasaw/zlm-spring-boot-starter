@@ -12,6 +12,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 /**
  * @author luna
  * @version 1.0
@@ -32,6 +35,55 @@ public class ZlmHookController {
     private AsyncTaskExecutor executor;
 
     /**
+     * 处理同步Hook事件的通用方法
+     *
+     * @param hookName Hook事件名称，用于日志输出
+     * @param param    Hook参数
+     * @param function Hook处理函数
+     * @param <T>      参数类型
+     * @param <R>      返回类型
+     * @return Hook响应结果
+     */
+    private <T, R> R handleSyncHookEvent(String hookName, T param, Function<T, R> function) {
+        try {
+            log.info("{}::param = {}", hookName, JSON.toJSONString(param));
+            R result = function.apply(param);
+            log.info("{} success, result = {}", hookName, JSON.toJSONString(result));
+            return result;
+        } catch (Exception e) {
+            log.error("{} fail, param = {}", hookName, JSON.toJSONString(param), e);
+            throw e;
+        }
+    }
+
+    /**
+     * 处理异步Hook事件的通用方法
+     *
+     * @param hookName Hook事件名称，用于日志输出
+     * @param param    Hook参数
+     * @param consumer Hook处理函数
+     * @param <T>      参数类型
+     * @return Hook响应结果（异步处理总是返回SUCCESS）
+     */
+    private <T> HookResult handleAsyncHookEvent(String hookName, T param, Consumer<T> consumer) {
+        try {
+            log.info("{}::param = {}", hookName, JSON.toJSONString(param));
+            executor.execute(() -> {
+                try {
+                    consumer.accept(param);
+                    log.info("{} async success", hookName);
+                } catch (Exception e) {
+                    log.error("{} async fail, param = {}", hookName, JSON.toJSONString(param), e);
+                }
+            });
+            return HookResult.SUCCESS();
+        } catch (Exception e) {
+            log.error("{} fail, param = {}", hookName, JSON.toJSONString(param), e);
+            return HookResult.SUCCESS();
+        }
+    }
+
+    /**
      * 服务器定时上报时间，上报间隔可配置，默认10s上报一次
      *
      * @param param
@@ -39,8 +91,7 @@ public class ZlmHookController {
      */
     @PostMapping(value = "/on_server_keepalive", produces = "application/json;charset=UTF-8")
     public HookResult onServerKeepalive(@RequestBody OnServerKeepaliveHookParam param) {
-        executor.execute(() -> zlmHookService.onServerKeepLive(param));
-        return HookResult.SUCCESS();
+        return handleAsyncHookEvent("onServerKeepalive", param, zlmHookService::onServerKeepLive);
     }
 
     /**
@@ -49,7 +100,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_play", produces = "application/json;charset=UTF-8")
     public HookResult onPlay(@RequestBody OnPlayHookParam param) {
-        return zlmHookService.onPlay(param);
+        return handleSyncHookEvent("onPlay", param, zlmHookService::onPlay);
     }
 
     /**
@@ -58,7 +109,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_publish", produces = "application/json;charset=UTF-8")
     public HookResultForOnPublish onPublish(@RequestBody OnPublishHookParam param) {
-        return zlmHookService.onPublish(param);
+        return handleSyncHookEvent("onPublish", param, zlmHookService::onPublish);
     }
 
     /**
@@ -67,8 +118,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_stream_changed", produces = "application/json;charset=UTF-8")
     public HookResult onStreamChanged(@RequestBody OnStreamChangedHookParam param) {
-        executor.execute(() -> zlmHookService.onStreamChanged(param));
-        return HookResult.SUCCESS();
+        return handleAsyncHookEvent("onStreamChanged", param, zlmHookService::onStreamChanged);
     }
 
     /**
@@ -81,7 +131,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_stream_none_reader", produces = "application/json;charset=UTF-8")
     public HookResultForStreamNoneReader onStreamNoneReader(@RequestBody OnStreamNoneReaderHookParam param) {
-        return zlmHookService.onStreamNoneReader(param);
+        return handleSyncHookEvent("onStreamNoneReader", param, zlmHookService::onStreamNoneReader);
     }
 
     /**
@@ -92,8 +142,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_stream_not_found", produces = "application/json;charset=UTF-8")
     public HookResult onStreamNotFound(@RequestBody OnStreamNotFoundHookParam param) {
-        executor.execute(() -> zlmHookService.onStreamNotFound(param));
-        return HookResult.SUCCESS();
+        return handleAsyncHookEvent("onStreamNotFound", param, zlmHookService::onStreamNotFound);
     }
 
     /**
@@ -111,8 +160,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_server_exited", produces = "application/json;charset=UTF-8")
     public HookResult onServerExited(@RequestBody HookParam param) {
-        executor.execute(() -> zlmHookService.onServerExited(param));
-        return HookResult.SUCCESS();
+        return handleAsyncHookEvent("onServerExited", param, zlmHookService::onServerExited);
     }
 
     /**
@@ -121,10 +169,8 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_send_rtp_stopped", produces = "application/json;charset=UTF-8")
     public HookResult onSendRtpStopped(@RequestBody OnSendRtpStoppedHookParam param) {
-        executor.execute(() -> zlmHookService.onSendRtpStopped(param));
-        return HookResult.SUCCESS();
+        return handleAsyncHookEvent("onSendRtpStopped", param, zlmHookService::onSendRtpStopped);
     }
-
 
     /**
      * rtpServer收流超时
@@ -133,8 +179,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_rtp_server_timeout", produces = "application/json;charset=UTF-8")
     public HookResult onRtpServerTimeout(@RequestBody OnRtpServerTimeoutHookParam param) {
-        executor.execute(() -> zlmHookService.onRtpServerTimeout(param));
-        return HookResult.SUCCESS();
+        return handleAsyncHookEvent("onRtpServerTimeout", param, zlmHookService::onRtpServerTimeout);
     }
 
     /**
@@ -146,9 +191,8 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_http_access", produces = "application/json;charset=UTF-8")
     public HookResultForOnHttpAccess onHttpAccess(@RequestBody OnHttpAccessParam param) {
-        return zlmHookService.onHttpAccess(param);
+        return handleSyncHookEvent("onHttpAccess", param, zlmHookService::onHttpAccess);
     }
-
 
     /**
      * 该rtsp流是否开启rtsp专用方式的鉴权事件，开启后才会触发on_rtsp_auth事件。
@@ -161,7 +205,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_rtsp_realm", produces = "application/json;charset=UTF-8")
     public HookResultForOnRtspRealm onRtspRealm(@RequestBody OnRtspRealmHookParam param) {
-        return zlmHookService.onRtspRealm(param);
+        return handleSyncHookEvent("onRtspRealm", param, zlmHookService::onRtspRealm);
     }
 
     /**
@@ -173,7 +217,7 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_rtsp_auth", produces = "application/json;charset=UTF-8")
     public HookResultForOnRtspAuth onRtspAuth(@RequestBody OnRtspAuthHookParam param) {
-        return zlmHookService.onRtspAuth(param);
+        return handleSyncHookEvent("onRtspAuth", param, zlmHookService::onRtspAuth);
     }
 
     /**
@@ -186,15 +230,12 @@ public class ZlmHookController {
     @ResponseBody
     @PostMapping(value = "/on_flow_report", produces = "application/json;charset=UTF-8")
     public HookResult onFlowReport(@RequestBody OnFlowReportHookParam param) {
-        executor.execute(() -> zlmHookService.onFlowReport(param));
-        return HookResult.SUCCESS();
+        return handleAsyncHookEvent("onFlowReport", param, zlmHookService::onFlowReport);
     }
 
     @ResponseBody
     @PostMapping(value = "/on_record_mp4", produces = "application/json;charset=UTF-8")
     public HookResult onRecordMp4(@RequestBody OnRecordMp4HookParam param) {
-        executor.execute(() -> zlmHookService.onRecordMp4(param));
-        return HookResult.SUCCESS();
+        return handleAsyncHookEvent("onRecordMp4", param, zlmHookService::onRecordMp4);
     }
-
 }
