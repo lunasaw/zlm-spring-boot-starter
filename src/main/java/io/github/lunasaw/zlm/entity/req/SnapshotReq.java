@@ -1,7 +1,6 @@
 package io.github.lunasaw.zlm.entity.req;
 
 import com.alibaba.fastjson.annotation.JSONField;
-
 import lombok.Data;
 
 import java.util.HashMap;
@@ -9,6 +8,8 @@ import java.util.Map;
 
 /**
  * 这个类代表了具有各种属性的截图任务。
+ *
+ * @author weidian
  */
 @Data
 public class SnapshotReq {
@@ -23,13 +24,13 @@ public class SnapshotReq {
      * 截图失败超时时间，防止FFmpeg一直等待截图。
      */
     @JSONField(name = "timeout_sec")
-    private int    timeoutSec;
+    private int timeoutSec = 30;
 
     /**
      * 截图的过期时间，该时间内产生的截图都会作为缓存返回。
      */
     @JSONField(name = "expire_sec")
-    private int    expireSec;
+    private int expireSec = 5;
 
     @JSONField(deserialize = false, serialize = false)
     private String savePath;

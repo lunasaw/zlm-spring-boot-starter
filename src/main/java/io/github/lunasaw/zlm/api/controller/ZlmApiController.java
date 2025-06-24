@@ -1,5 +1,6 @@
 package io.github.lunasaw.zlm.api.controller;
 
+import com.luna.common.check.Assert;
 import io.github.lunasaw.zlm.api.ZlmRestService;
 import io.github.lunasaw.zlm.config.ZlmNode;
 import io.github.lunasaw.zlm.config.ZlmProperties;
@@ -13,7 +14,11 @@ import io.github.lunasaw.zlm.node.LoadBalancer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -36,11 +41,35 @@ public class ZlmApiController {
     @Autowired
     private LoadBalancer loadBalancer;
 
+    @Autowired
+    private HttpServletRequest request;
+
     /**
      * 获取可用的 ZLM 节点
+     * 支持通过请求头 X-Node-Key 指定节点
      */
     private ZlmNode getAvailableNode() {
-        return loadBalancer.selectNode("default");
+        String nodeKey = request.getHeader("X-Node-Key");
+        return getAvailableNode(nodeKey);
+    }
+
+    /**
+     * 获取可用的 ZLM 节点
+     *
+     * @param nodeKey 节点key，如果为空则使用负载均衡策略选择节点
+     */
+    private ZlmNode getAvailableNode(String nodeKey) {
+        ZlmNode selectNode;
+        if (nodeKey != null && !nodeKey.trim().isEmpty()) {
+            // 使用指定的节点key获取节点
+            selectNode = zlmProperties.getNodeMap().get(nodeKey);
+            Assert.notNull(selectNode, "指定的节点不存在: " + nodeKey);
+        } else {
+            // 使用负载均衡策略选择节点
+            selectNode = loadBalancer.selectNode("default");
+            Assert.notNull(selectNode, "未找到可用的ZLM节点");
+        }
+        return selectNode;
     }
 
     // ==================== 系统信息接口 ====================
@@ -357,7 +386,7 @@ public class ZlmApiController {
      * 查询文件概览
      */
     @PostMapping("/record/summary")
-    public ServerResponse getMp4RecordSummary(@RequestBody Map<String, String> params) {
+    public ServerResponse<String> getMp4RecordSummary(@RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getMp4RecordSummary(node.getHost(), node.getSecret(), params);
     }
@@ -557,5 +586,16 @@ public class ZlmApiController {
     @GetMapping("/nodes")
     public List<ZlmNode> getAllNodes() {
         return zlmProperties.getNodes();
+    }
+
+    // ==================== 异常处理 ====================
+
+    /**
+     * 处理节点不存在异常
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("参数错误: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(e.getMessage());
     }
 }

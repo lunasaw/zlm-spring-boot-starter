@@ -28,6 +28,6 @@ public class RoundRobinLoadBalancer implements LoadBalancer {
 
     @Override
     public String getType() {
-        return LoadBalancerEnums.RANDOM.getType();
+        return LoadBalancerEnums.ROUND_ROBIN.getType();
     }
 }

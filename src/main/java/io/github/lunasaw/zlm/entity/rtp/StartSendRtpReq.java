@@ -65,6 +65,7 @@ public class StartSendRtpReq extends MediaReq {
 
     // Getters and setters...
 
+    @JSONField(serialize = false)
     public JSONObject getMap() {
         return JSON.parseObject(JSON.toJSONString(this));
     }

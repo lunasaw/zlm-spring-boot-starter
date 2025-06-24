@@ -3,6 +3,9 @@ package io.github.lunasaw.zlm.entity;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
+/**
+ * @author weidian
+ */
 @Data
 public class ServerResponse<T> {
 
@@ -17,4 +20,11 @@ public class ServerResponse<T> {
 
     @JSONField(name = "result")
     private String result;
+
+    public static ServerResponse fail(String msg) {
+        ServerResponse response = new ServerResponse<>();
+        response.setCode(500);
+        response.setMsg(msg);
+        return response;
+    }
 }
