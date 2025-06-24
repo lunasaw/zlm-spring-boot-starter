@@ -6,7 +6,7 @@
 
     <groupId>io.github.lunasaw</groupId>
     <artifactId>zlm-spring-boot-starter</artifactId>
-    <version>1.0.3</version>
+    <version>${zlm-spring-boot-starter.version}</version>
 
     <name>zlm-spring-boot-starter</name>
     <description>ZLMediaKit restful api and hook starter</description>
@@ -14,14 +14,14 @@
 
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-        <spring-boot.version>2.7.18</spring-boot.version>
-        <luna-common.version>2.5.3</luna-common.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <spring-boot.version>3.5.3</spring-boot.version>
+        <luna-common.version>2.6.2</luna-common.version>
         <httpclient5.version>5.2.1</httpclient5.version>
         <github.username>lunasaw</github.username>
         <app.profiles>${project.name}</app.profiles>
-        <zlm-spring-boot-starter.version>1.0.3</zlm-spring-boot-starter.version>
+        <zlm-spring-boot-starter.version>1.0.4</zlm-spring-boot-starter.version>
     </properties>
 
     <developers>
@@ -154,7 +154,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-release-plugin</artifactId>
-                        <version>2.3.2</version>
+                        <version>3.1.1</version>
                         <configuration>
                             <autoVersionSubmodules>true</autoVersionSubmodules>
                             <useReleaseProfile>false</useReleaseProfile>
@@ -166,10 +166,10 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.0</version>
+                        <version>3.14.0</version>
                         <configuration>
-                            <source>1.8</source>
-                            <target>1.8</target>
+                            <source>17</source>
+                            <target>17</target>
                             <encoding>utf-8</encoding>
                         </configuration>
                     </plugin>

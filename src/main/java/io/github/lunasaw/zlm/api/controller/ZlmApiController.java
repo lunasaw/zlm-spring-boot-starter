@@ -11,6 +11,7 @@ import io.github.lunasaw.zlm.entity.req.RecordReq;
 import io.github.lunasaw.zlm.entity.req.SnapshotReq;
 import io.github.lunasaw.zlm.entity.rtp.*;
 import io.github.lunasaw.zlm.node.LoadBalancer;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.Map;
