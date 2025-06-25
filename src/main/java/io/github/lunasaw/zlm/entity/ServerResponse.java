@@ -16,10 +16,10 @@ public class ServerResponse<T> {
     private T data;
 
     @JSONField(name = "msg")
-    private String msg;
+    private String msg = "success";
 
     @JSONField(name = "result")
-    private String result;
+    private String result = "success";
 
     public static ServerResponse fail(String msg) {
         ServerResponse response = new ServerResponse<>();
