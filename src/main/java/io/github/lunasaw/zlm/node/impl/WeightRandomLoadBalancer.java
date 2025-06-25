@@ -27,7 +27,7 @@ public class WeightRandomLoadBalancer implements LoadBalancer {
         init();
     }
 
-    public static void init() {
+    public void init() {
         List<String> nodeList = new ArrayList<>(ZlmProperties.nodeMap.keySet());
         int size = nodeList.size();
         if (size > 0) {

@@ -8,6 +8,8 @@ import io.github.lunasaw.zlm.config.ZlmNode;
  */
 public interface LoadBalancer {
 
+    void init();
+
     ZlmNode selectNode(String key);
 
     String getType();

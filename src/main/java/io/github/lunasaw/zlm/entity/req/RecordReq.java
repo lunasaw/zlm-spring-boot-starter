@@ -2,7 +2,7 @@ package io.github.lunasaw.zlm.entity.req;
 
 import java.util.Map;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson2.annotation.JSONField;
 
 import lombok.Data;
 

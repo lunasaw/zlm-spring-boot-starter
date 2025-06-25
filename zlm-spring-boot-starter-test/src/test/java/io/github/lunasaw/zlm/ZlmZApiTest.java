@@ -4,7 +4,8 @@ import com.luna.common.thread.AsyncEngineUtils;
 import io.github.lunasaw.zlm.config.ZlmAutoConfiguration;
 import io.github.lunasaw.zlm.config.ZlmNode;
 import io.github.lunasaw.zlm.config.ZlmProperties;
-import io.github.lunasaw.zlm.node.impl.*;
+import io.github.lunasaw.zlm.node.NodeService;
+import io.github.lunasaw.zlm.node.impl.WeightRandomLoadBalancer;
 import lombok.SneakyThrows;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,27 +29,8 @@ public class ZlmZApiTest {
     @Autowired
     private ZlmProperties zlmProperties;
 
-    public static void main(String[] args) {
-        ZlmNode node1 = new ZlmNode();
-        node1.setServerId("123");
-        node1.setWeight(2);
-        ZlmProperties.addNode(node1);
-
-        ZlmNode node2 = new ZlmNode();
-        node2.setServerId("1234");
-        node2.setWeight(1);
-        ZlmProperties.addNode(node2);
-
-        ZlmNode node3 = new ZlmNode();
-        node3.setServerId("12345");
-        node3.setWeight(1);
-        ZlmProperties.addNode(node3);
-
-        AtomicInteger k = new AtomicInteger();
-
-        long l = System.currentTimeMillis();
-        extracted();
-    }
+    @Autowired
+    private NodeService nodeService;
 
     @SneakyThrows
     private static void extracted() {
@@ -70,6 +52,29 @@ public class ZlmZApiTest {
             }
         }
         System.out.println(k.get());
+    }
+
+    @Test
+    public void btest() {
+        ZlmNode node1 = new ZlmNode();
+        node1.setServerId("123");
+        node1.setWeight(2);
+        nodeService.addNode(node1);
+
+        ZlmNode node2 = new ZlmNode();
+        node2.setServerId("1234");
+        node2.setWeight(1);
+        nodeService.addNode(node2);
+
+        ZlmNode node3 = new ZlmNode();
+        node3.setServerId("12345");
+        node3.setWeight(1);
+        nodeService.addNode(node3);
+
+        AtomicInteger k = new AtomicInteger();
+
+        long l = System.currentTimeMillis();
+        extracted();
     }
 
     @Test

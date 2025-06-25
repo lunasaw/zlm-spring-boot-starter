@@ -16,6 +16,11 @@ public class RoundRobinLoadBalancer implements LoadBalancer {
     static final AtomicInteger SEQUENCE = new AtomicInteger(0);
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public ZlmNode selectNode(String key) {
         int index = SEQUENCE.getAndIncrement() % ZlmProperties.nodes.size();
         return ZlmProperties.nodes.get(index);
@@ -23,6 +28,6 @@ public class RoundRobinLoadBalancer implements LoadBalancer {
 
     @Override
     public String getType() {
-        return LoadBalancerEnums.RANDOM.getType();
+        return LoadBalancerEnums.ROUND_ROBIN.getType();
     }
 }

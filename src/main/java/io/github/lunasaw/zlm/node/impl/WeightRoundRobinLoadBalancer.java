@@ -26,7 +26,7 @@ public class WeightRoundRobinLoadBalancer implements LoadBalancer {
         init();
     }
 
-    public static void init() {
+    public void init() {
         List<String> nodeList = new ArrayList<>(ZlmProperties.nodeMap.keySet());
         int maxWeight = 0;
         for (String nodeName : nodeList) {

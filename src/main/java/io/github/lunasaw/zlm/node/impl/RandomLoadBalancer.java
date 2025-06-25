@@ -15,6 +15,11 @@ public class RandomLoadBalancer implements LoadBalancer {
     static final Random RANDOM = new Random();
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public ZlmNode selectNode(String key) {
         int index = RANDOM.nextInt(ZlmProperties.nodes.size());
         return ZlmProperties.nodes.get(index);
