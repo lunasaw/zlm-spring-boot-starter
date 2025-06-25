@@ -21,7 +21,7 @@
         <httpclient5.version>5.2.1</httpclient5.version>
         <github.username>lunasaw</github.username>
         <app.profiles>${project.name}</app.profiles>
-        <zlm-spring-boot-starter.version>1.0.4</zlm-spring-boot-starter.version>
+        <zlm-spring-boot-starter.version>1.0.5</zlm-spring-boot-starter.version>
     </properties>
 
     <developers>
