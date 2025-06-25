@@ -3,7 +3,7 @@ zlm:
   nodes:
     - server-id: zlm
       host: "http://127.0.0.1:9092"
-      secret: weidian
+      secret: zlm
       enabled: true
       hook-enabled: true
   balance: round_robin
