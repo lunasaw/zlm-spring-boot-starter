@@ -231,7 +231,7 @@ public class ZlmApiController {
      * 断开tcp连接
      */
     @DeleteMapping("/session/{sessionId}")
-    public ServerResponse<String> kickSession(@PathVariable String sessionId) {
+    public ServerResponse<String> kickSession(@PathVariable("sessionId") String sessionId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.kickSession(node.getHost(), node.getSecret(), sessionId);
     }
@@ -260,7 +260,7 @@ public class ZlmApiController {
      * 关闭拉流代理
      */
     @DeleteMapping("/proxy/{key}")
-    public ServerResponse<StreamKey.StringDelFlag> delStreamProxy(@PathVariable String key) {
+    public ServerResponse<StreamKey.StringDelFlag> delStreamProxy(@PathVariable("key") String key) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.delStreamProxy(node.getHost(), node.getSecret(), key);
     }
@@ -287,7 +287,7 @@ public class ZlmApiController {
      * 关闭推流代理
      */
     @DeleteMapping("/pusher/{key}")
-    public ServerResponse<StreamKey.StringDelFlag> delStreamPusherProxy(@PathVariable String key) {
+    public ServerResponse<StreamKey.StringDelFlag> delStreamPusherProxy(@PathVariable("key") String key) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.delStreamPusherProxy(node.getHost(), node.getSecret(), key);
     }
@@ -316,7 +316,7 @@ public class ZlmApiController {
      * 关闭FFmpeg拉流代理
      */
     @DeleteMapping("/ffmpeg/{key}")
-    public ServerResponse<StreamKey.StringDelFlag> delFFmpegSource(@PathVariable String key) {
+    public ServerResponse<StreamKey.StringDelFlag> delFFmpegSource(@PathVariable("key") String key) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.delFFmpegSource(node.getHost(), node.getSecret(), key);
     }
@@ -412,7 +412,7 @@ public class ZlmApiController {
      * 获取rtp推流信息
      */
     @GetMapping("/rtp/info/{streamId}")
-    public RtpInfoResult getRtpInfo(@PathVariable String streamId) {
+    public RtpInfoResult getRtpInfo(@PathVariable("streamId") String streamId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getRtpInfo(node.getHost(), node.getSecret(), streamId);
     }
@@ -448,7 +448,7 @@ public class ZlmApiController {
      * 关闭RTP服务器
      */
     @DeleteMapping("/rtp/server/{streamId}")
-    public CloseRtpServerResult closeRtpServer(@PathVariable String streamId) {
+    public CloseRtpServerResult closeRtpServer(@PathVariable("streamId") String streamId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.closeRtpServer(node.getHost(), node.getSecret(), streamId);
     }
@@ -457,7 +457,7 @@ public class ZlmApiController {
      * 更新RTP服务器过滤SSRC
      */
     @PutMapping("/rtp/server/{streamId}/ssrc/{ssrc}")
-    public ServerResponse<String> updateRtpServerSSRC(@PathVariable String streamId, @PathVariable String ssrc) {
+    public ServerResponse<String> updateRtpServerSSRC(@PathVariable("streamId") String streamId, @PathVariable("ssrc") String ssrc) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.updateRtpServerSSRC(node.getHost(), node.getSecret(), streamId, ssrc);
     }
@@ -466,7 +466,7 @@ public class ZlmApiController {
      * 暂停RTP超时检查
      */
     @PostMapping("/rtp/server/{streamId}/pause-check")
-    public ServerResponse<String> pauseRtpCheck(@PathVariable String streamId) {
+    public ServerResponse<String> pauseRtpCheck(@PathVariable("streamId") String streamId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.pauseRtpCheck(node.getHost(), node.getSecret(), streamId);
     }
@@ -475,7 +475,7 @@ public class ZlmApiController {
      * 恢复RTP超时检查
      */
     @PostMapping("/rtp/server/{streamId}/resume-check")
-    public ServerResponse<String> resumeRtpCheck(@PathVariable String streamId) {
+    public ServerResponse<String> resumeRtpCheck(@PathVariable("streamId") String streamId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.resumeRtpCheck(node.getHost(), node.getSecret(), streamId);
     }
@@ -564,7 +564,7 @@ public class ZlmApiController {
      * 指定节点获取版本信息
      */
     @GetMapping("/node/{nodeId}/version")
-    public ServerResponse<Version> getVersionByNode(@PathVariable String nodeId) {
+    public ServerResponse<Version> getVersionByNode(@PathVariable("nodeId") String nodeId) {
         ZlmNode node = nodeSupplier.getNode(nodeId);
         if (node == null) {
             throw new IllegalArgumentException("节点不存在: " + nodeId);
@@ -576,7 +576,7 @@ public class ZlmApiController {
      * 指定节点获取流列表
      */
     @PostMapping("/node/{nodeId}/media/list")
-    public ServerResponse<List<MediaData>> getMediaListByNode(@PathVariable String nodeId, @RequestBody MediaReq mediaReq) {
+    public ServerResponse<List<MediaData>> getMediaListByNode(@PathVariable(value = "nodeId") String nodeId, @RequestBody MediaReq mediaReq) {
         ZlmNode node = nodeSupplier.getNode(nodeId);
         if (node == null) {
             throw new IllegalArgumentException("节点不存在: " + nodeId);
@@ -598,8 +598,11 @@ public class ZlmApiController {
      * 处理节点不存在异常
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+    public ServerResponse<String> handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("参数错误: {}", e.getMessage());
-        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(e.getMessage());
+        ServerResponse<String> response = new ServerResponse<>();
+        response.setCode(0);
+        response.setMsg(e.getMessage());
+        return response;
     }
 }

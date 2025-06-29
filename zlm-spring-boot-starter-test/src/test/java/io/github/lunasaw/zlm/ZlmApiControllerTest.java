@@ -536,8 +536,9 @@ public class ZlmApiControllerTest {
         // 执行测试
         mockMvc.perform(get("/zlm/api/node/{nodeId}/version", nonExistentNodeId))
                 .andDo(print())
-                .andExpect(status().isExpectationFailed())
-                .andExpect(content().string("节点不存在: " + nonExistentNodeId));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("节点不存在: " + nonExistentNodeId));
     }
 
     @Test
@@ -590,7 +591,9 @@ public class ZlmApiControllerTest {
         // 执行测试，应该抛出异常
         mockMvc.perform(get("/zlm/api/version"))
                 .andDo(print())
-                .andExpect(status().isExpectationFailed());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("未找到可用的ZLM节点"));
     }
 
     // ==================== X-Node-Key 请求头测试 ====================
@@ -622,7 +625,9 @@ public class ZlmApiControllerTest {
         mockMvc.perform(get("/zlm/api/version")
                         .header("X-Node-Key", "invalid-node"))
                 .andDo(print())
-                .andExpect(status().isExpectationFailed());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("指定的节点不存在: invalid-node"));
     }
 
     @Test
@@ -732,8 +737,9 @@ public class ZlmApiControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mediaReq)))
                 .andDo(print())
-                .andExpect(status().isExpectationFailed())
-                .andExpect(content().string("节点不存在: " + nonExistentNodeId));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(0))
+                .andExpect(jsonPath("$.msg").value("节点不存在: " + nonExistentNodeId));
     }
 
     @Test
@@ -800,12 +806,13 @@ public class ZlmApiControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.code").value(0));
             } else {
-                // 其他无效key应该返回417错误
+                // 其他无效key应该返回异常信息
                 mockMvc.perform(get("/zlm/api/version")
                                 .header("X-Node-Key", invalidKey))
                         .andDo(print())
-                        .andExpect(status().isExpectationFailed())
-                        .andExpect(content().string("指定的节点不存在: " + invalidKey));
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.code").value(0))
+                        .andExpect(jsonPath("$.msg").value("指定的节点不存在: " + invalidKey));
             }
         }
     }

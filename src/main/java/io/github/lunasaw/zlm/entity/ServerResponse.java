@@ -21,10 +21,4 @@ public class ServerResponse<T> {
     @JSONField(name = "result")
     private String result = "success";
 
-    public static ServerResponse fail(String msg) {
-        ServerResponse response = new ServerResponse<>();
-        response.setCode(500);
-        response.setMsg(msg);
-        return response;
-    }
 }
