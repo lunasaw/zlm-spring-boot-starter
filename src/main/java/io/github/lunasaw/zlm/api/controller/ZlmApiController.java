@@ -11,6 +11,7 @@ import io.github.lunasaw.zlm.entity.req.RecordReq;
 import io.github.lunasaw.zlm.entity.req.SnapshotReq;
 import io.github.lunasaw.zlm.entity.rtp.*;
 import io.github.lunasaw.zlm.node.LoadBalancer;
+import io.github.lunasaw.zlm.node.NodeSupplier;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ public class ZlmApiController {
     private LoadBalancer loadBalancer;
 
     @Autowired
+    private NodeSupplier nodeSupplier;
+
+    @Autowired
     private HttpServletRequest request;
 
     /**
@@ -62,7 +66,7 @@ public class ZlmApiController {
         ZlmNode selectNode;
         if (nodeKey != null && !nodeKey.trim().isEmpty()) {
             // 使用指定的节点key获取节点
-            selectNode = zlmProperties.getNodeMap().get(nodeKey);
+            selectNode = nodeSupplier.getNode(nodeKey);
             Assert.notNull(selectNode, "指定的节点不存在: " + nodeKey);
         } else {
             // 使用负载均衡策略选择节点
@@ -561,7 +565,7 @@ public class ZlmApiController {
      */
     @GetMapping("/node/{nodeId}/version")
     public ServerResponse<Version> getVersionByNode(@PathVariable String nodeId) {
-        ZlmNode node = zlmProperties.getNodeMap().get(nodeId);
+        ZlmNode node = nodeSupplier.getNode(nodeId);
         if (node == null) {
             throw new IllegalArgumentException("节点不存在: " + nodeId);
         }
@@ -573,7 +577,7 @@ public class ZlmApiController {
      */
     @PostMapping("/node/{nodeId}/media/list")
     public ServerResponse<List<MediaData>> getMediaListByNode(@PathVariable String nodeId, @RequestBody MediaReq mediaReq) {
-        ZlmNode node = zlmProperties.getNodeMap().get(nodeId);
+        ZlmNode node = nodeSupplier.getNode(nodeId);
         if (node == null) {
             throw new IllegalArgumentException("节点不存在: " + nodeId);
         }

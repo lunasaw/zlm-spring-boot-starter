@@ -22,6 +22,14 @@ public interface NodeSupplier {
     List<ZlmNode> getNodes();
 
     /**
+     * 根据服务器ID获取指定节点
+     *
+     * @param serverId 服务器ID
+     * @return 节点信息，如果不存在则返回null
+     */
+    ZlmNode getNode(String serverId);
+
+    /**
      * 获取节点提供器的名称标识
      *
      * @return 提供器名称

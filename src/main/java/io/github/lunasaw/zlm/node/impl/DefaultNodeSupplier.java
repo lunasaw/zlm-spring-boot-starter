@@ -32,4 +32,15 @@ public class DefaultNodeSupplier implements NodeSupplier {
         log.debug("从配置获取节点列表，共{}个节点", nodes != null ? nodes.size() : 0);
         return nodes;
     }
+
+    @Override
+    public ZlmNode getNode(String serverId) {
+        if (serverId == null) {
+            return null;
+        }
+
+        ZlmNode node = zlmProperties.getNodeMap().get(serverId);
+        log.debug("从配置获取节点[{}]：{}", serverId, node != null ? "找到" : "未找到");
+        return node;
+    }
 }
