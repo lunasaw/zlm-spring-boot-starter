@@ -20,6 +20,7 @@ API进行了完整封装，并提供了Hook事件处理机制，支持集群化�
 - 🎯 **Hook事件处理**: 支持ZLMediaKit的所有Hook事件回调
 - ⚖️ **负载均衡**: 内置5种负载均衡算法，支持集群化部署
 - 🔧 **灵活配置**: 支持多节点配置，可独立启用/禁用节点和Hook功能
+- 🌐 **动态节点发现**: 支持NodeSupplier接口实现动态节点管理和服务发现
 - 📊 **监控支持**: 提供流媒体状态监控和统计信息获取
 - 🎬 **流媒体管理**: 支持流的推拉、录制、截图等完整功能
 - 🔐 **安全认证**: 支持RTSP认证和HTTP访问控制
@@ -415,6 +416,159 @@ FAILED(401,"未授权");    // 拒绝访问
 
 ## 高级用法
 
+### 动态节点发现 (NodeSupplier)
+
+本项目支持通过`NodeSupplier`接口实现动态节点发现和管理，支持从数据库、注册中心、配置中心等数据源动态获取节点列表。
+
+#### 默认实现
+
+系统默认提供`DefaultNodeSupplier`实现，从配置文件中获取节点列表：
+
+```java
+
+@Component
+public class DefaultNodeSupplier implements NodeSupplier {
+    @Autowired
+    private ZlmProperties zlmProperties;
+
+    @Override
+    public String getName() {
+        return "DefaultNodeSupplier";
+    }
+
+    @Override
+    public List<ZlmNode> getNodes() {
+        return zlmProperties.getNodes();
+    }
+}
+```
+
+#### 自定义NodeSupplier
+
+可以实现自定义的NodeSupplier来支持动态节点发现：
+
+```java
+
+@Component
+public class DatabaseNodeSupplier implements NodeSupplier {
+
+    @Autowired
+    private NodeRepository nodeRepository;
+
+    @Override
+    public String getName() {
+        return "DatabaseNodeSupplier";
+    }
+
+    @Override
+    public List<ZlmNode> getNodes() {
+        // 从数据库获取活跃节点列表
+        List<NodeEntity> activeNodes = nodeRepository.findByStatus("ACTIVE");
+        return activeNodes.stream()
+                .map(this::convertToZlmNode)
+                .collect(Collectors.toList());
+    }
+
+    private ZlmNode convertToZlmNode(NodeEntity entity) {
+        ZlmNode node = new ZlmNode();
+        node.setServerId(entity.getServerId());
+        node.setHost(entity.getHost());
+        node.setSecret(entity.getSecret());
+        node.setEnabled(entity.isEnabled());
+        node.setWeight(entity.getWeight());
+        return node;
+    }
+}
+```
+
+#### 注册中心集成示例
+
+与Spring Cloud集成，从注册中心动态发现节点：
+
+```java
+
+@Component
+public class EurekaNodeSupplier implements NodeSupplier {
+
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
+    @Override
+    public String getName() {
+        return "EurekaNodeSupplier";
+    }
+
+    @Override
+    public List<ZlmNode> getNodes() {
+        List<ServiceInstance> instances = discoveryClient.getInstances("zlm-service");
+        return instances.stream()
+                .filter(ServiceInstance::isSecure)
+                .map(this::convertToZlmNode)
+                .collect(Collectors.toList());
+    }
+
+    private ZlmNode convertToZlmNode(ServiceInstance instance) {
+        ZlmNode node = new ZlmNode();
+        node.setServerId(instance.getInstanceId());
+        node.setHost(instance.getUri().toString());
+        node.setSecret(instance.getMetadata().get("secret"));
+        node.setEnabled(true);
+        node.setWeight(Integer.parseInt(instance.getMetadata().getOrDefault("weight", "1")));
+        return node;
+    }
+}
+```
+
+#### Nacos配置中心集成
+
+从Nacos配置中心动态获取节点配置：
+
+```java
+
+@Component
+public class NacosNodeSupplier implements NodeSupplier {
+
+    @NacosValue("${zlm.nodes:[]}")
+    private String nodesConfig;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Override
+    public String getName() {
+        return "NacosNodeSupplier";
+    }
+
+    @Override
+    public List<ZlmNode> getNodes() {
+        try {
+            if (StringUtils.hasText(nodesConfig)) {
+                return objectMapper.readValue(nodesConfig,
+                        new TypeReference<List<ZlmNode>>() {
+                        });
+            }
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error("解析Nacos节点配置失败", e);
+            return Collections.emptyList();
+        }
+    }
+}
+```
+
+#### NodeSupplier优势
+
+1. **实时性**: 每次负载均衡选择节点时都获取最新的节点列表
+2. **动态性**: 支持节点的动态上下线，无需重启应用
+3. **扩展性**: 可以集成任何数据源，如数据库、注册中心、配置中心等
+4. **容错性**: 支持多种数据源的容错和降级策略
+
+#### 使用建议
+
+- **开发环境**: 使用默认的`DefaultNodeSupplier`，配置简单
+- **测试环境**: 可以使用数据库或配置中心的NodeSupplier
+- **生产环境**: 建议使用注册中心集成的NodeSupplier，支持自动故障转移
+
 ### 集群部署示例
 
 ```yaml
@@ -445,13 +599,56 @@ zlm:
 ### 自定义负载均衡器
 
 ```java
-
 @Component
 public class CustomLoadBalancer implements LoadBalancer {
+
+    private volatile NodeSupplier nodeSupplier;
+
     @Override
-    public ZlmNode selectNode(List<ZlmNode> nodes, String key) {
-        // 实现自定义负载均衡逻辑
-        return nodes.get(0);
+    public void setNodeSupplier(NodeSupplier nodeSupplier) {
+        this.nodeSupplier = nodeSupplier;
+    }
+
+    @Override
+    public ZlmNode selectNode(String key) {
+        List<ZlmNode> nodes = getCurrentNodes();
+        if (nodes == null || nodes.isEmpty()) {
+            return null;
+        }
+
+        // 实现自定义负载均衡逻辑，例如基于地理位置的选择
+        return selectByLocation(nodes, key);
+    }
+
+    @Override
+    public String getType() {
+        return "CustomLoadBalancer";
+    }
+
+    private List<ZlmNode> getCurrentNodes() {
+        if (nodeSupplier == null) {
+            return Collections.emptyList();
+        }
+        try {
+            return nodeSupplier.getNodes();
+        } catch (Exception e) {
+            log.error("获取节点列表失败", e);
+            return Collections.emptyList();
+        }
+    }
+
+    private ZlmNode selectByLocation(List<ZlmNode> nodes, String key) {
+        // 基于地理位置或其他业务逻辑的选择算法
+        // 例如：选择离用户最近的节点
+        return nodes.stream()
+                .filter(node -> isNearUser(node, key))
+                .findFirst()
+                .orElse(nodes.get(0));
+    }
+
+    private boolean isNearUser(ZlmNode node, String key) {
+        // 实现地理位置判断逻辑
+        return true;
     }
 }
 ```
@@ -507,6 +704,24 @@ A: 请确认：
 2. 负载均衡算法配置正确
 3. 节点权重配置（如使用加权算法）
 
+### Q: 自定义NodeSupplier不生效？
+
+A: 请检查：
+
+1. 确保自定义NodeSupplier标注了`@Component`注解
+2. 检查Spring扫描路径是否包含NodeSupplier实现类
+3. 确认NodeSupplier的`getNodes()`方法返回非空且有效的节点列表
+4. 查看日志确认NodeSupplier是否被正确注入到LoadBalancer
+
+### Q: 动态节点发现不及时？
+
+A: 解决方案：
+
+1. NodeSupplier每次选择节点时都会被调用，确保实时性
+2. 检查数据源（数据库/注册中心）的更新是否及时
+3. 考虑在NodeSupplier中增加缓存和定时刷新机制
+4. 查看NodeSupplier实现中的异常处理逻辑
+
 ### Q: API调用超时？
 
 A: 建议：
@@ -528,7 +743,10 @@ A: 请检查：
 1. **版本兼容性**: 请确保ZLMediaKit版本与starter版本兼容
 2. **Hook接口安全**: 生产环境需要对Hook接口进行适当的安全防护
 3. **性能考虑**: 大量并发时建议合理配置连接池和超时时间
-4. **日志监控**: 建议开启详细日志以便问题排查
+4. **NodeSupplier性能**: 由于每次负载均衡选择节点时都会调用NodeSupplier，请确保`getNodes()`方法的性能，必要时添加缓存机制
+5. **节点数据一致性**: 使用自定义NodeSupplier时，确保数据源的高可用性和数据一致性
+6. **容错处理**: NodeSupplier应当具备良好的异常处理能力，避免因数据源异常导致整个负载均衡失效
+7. **日志监控**: 建议开启详细日志以便问题排查，特别是NodeSupplier的执行情况
 
 ## 代码规范
 

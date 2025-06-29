@@ -123,7 +123,7 @@ public class ZlmApiController {
      * 获取服务器配置
      */
     @GetMapping("/server/config")
-    public ServerResponse<ServerNodeConfig> getServerConfig() {
+    public ServerResponse<List<ServerNodeConfig>> getServerConfig() {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getServerConfig(node.getHost(), node.getSecret());
     }
