@@ -643,7 +643,7 @@ public class ZlmApiController {
      * 获取存储信息
      */
     @PostMapping("/storage/space")
-    public ServerResponse getStorageSpace(@RequestBody Map<String, String> params) {
+    public ServerResponse<String> getStorageSpace(@RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getStorageSpace(node.getHost(), node.getSecret(), params);
     }

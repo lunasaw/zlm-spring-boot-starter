@@ -5,6 +5,12 @@ import com.alibaba.fastjson2.JSONObject;
 import io.github.lunasaw.zlm.entity.ServerNodeConfig;
 import io.github.lunasaw.zlm.hook.param.*;
 import io.github.lunasaw.zlm.hook.service.ZlmHookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +31,7 @@ import java.util.function.Function;
 @RestController
 @ConditionalOnProperty(value = "zlm.hook-enable", havingValue = "true")
 @RequestMapping("/index/hook/")
+@Tag(name = "ZLM钩子事件", description = "ZLMediaKit钩子事件回调接口，用于处理各种媒体流事件")
 public class ZlmHookController {
 
     @Autowired
@@ -90,7 +97,11 @@ public class ZlmHookController {
      * @return
      */
     @PostMapping(value = "/on_server_keepalive", produces = "application/json;charset=UTF-8")
-    public HookResult onServerKeepalive(@RequestBody OnServerKeepaliveHookParam param) {
+    @Operation(summary = "服务器心跳上报", description = "服务器定时上报心跳信息，默认10秒上报一次")
+    @ApiResponse(responseCode = "200", description = "处理成功",
+        content = @Content(schema = @Schema(implementation = HookResult.class)))
+    public HookResult onServerKeepalive(
+        @Parameter(description = "服务器心跳参数") @RequestBody OnServerKeepaliveHookParam param) {
         return handleAsyncHookEvent("onServerKeepalive", param, zlmHookService::onServerKeepLive);
     }
 
@@ -99,7 +110,11 @@ public class ZlmHookController {
      */
     @ResponseBody
     @PostMapping(value = "/on_play", produces = "application/json;charset=UTF-8")
-    public HookResult onPlay(@RequestBody OnPlayHookParam param) {
+    @Operation(summary = "播放器鉴权事件", description = "rtsp/rtmp/http-flv/ws-flv/hls播放触发的鉴权事件")
+    @ApiResponse(responseCode = "200", description = "鉴权成功",
+        content = @Content(schema = @Schema(implementation = HookResult.class)))
+    public HookResult onPlay(
+        @Parameter(description = "播放鉴权参数") @RequestBody OnPlayHookParam param) {
         return handleSyncHookEvent("onPlay", param, zlmHookService::onPlay);
     }
 
@@ -108,7 +123,11 @@ public class ZlmHookController {
      */
     @ResponseBody
     @PostMapping(value = "/on_publish", produces = "application/json;charset=UTF-8")
-    public HookResultForOnPublish onPublish(@RequestBody OnPublishHookParam param) {
+    @Operation(summary = "推流鉴权事件", description = "rtsp/rtmp/rtp推流时触发的鉴权事件")
+    @ApiResponse(responseCode = "200", description = "鉴权成功",
+        content = @Content(schema = @Schema(implementation = HookResultForOnPublish.class)))
+    public HookResultForOnPublish onPublish(
+        @Parameter(description = "推流鉴权参数") @RequestBody OnPublishHookParam param) {
         return handleSyncHookEvent("onPublish", param, zlmHookService::onPublish);
     }
 
@@ -117,7 +136,11 @@ public class ZlmHookController {
      */
     @ResponseBody
     @PostMapping(value = "/on_stream_changed", produces = "application/json;charset=UTF-8")
-    public HookResult onStreamChanged(@RequestBody OnStreamChangedHookParam param) {
+    @Operation(summary = "流状态变化事件", description = "rtsp/rtmp流注册或注销时触发，此事件对回复不敏感")
+    @ApiResponse(responseCode = "200", description = "处理成功",
+        content = @Content(schema = @Schema(implementation = HookResult.class)))
+    public HookResult onStreamChanged(
+        @Parameter(description = "流状态变化参数") @RequestBody OnStreamChangedHookParam param) {
         return handleAsyncHookEvent("onStreamChanged", param, zlmHookService::onStreamChanged);
     }
 
@@ -130,7 +153,11 @@ public class ZlmHookController {
      */
     @ResponseBody
     @PostMapping(value = "/on_stream_none_reader", produces = "application/json;charset=UTF-8")
-    public HookResultForStreamNoneReader onStreamNoneReader(@RequestBody OnStreamNoneReaderHookParam param) {
+    @Operation(summary = "流无人观看事件", description = "流无人观看时触发，可选择是否关闭无人观看的流")
+    @ApiResponse(responseCode = "200", description = "处理成功",
+        content = @Content(schema = @Schema(implementation = HookResultForStreamNoneReader.class)))
+    public HookResultForStreamNoneReader onStreamNoneReader(
+        @Parameter(description = "流无人观看参数") @RequestBody OnStreamNoneReaderHookParam param) {
         return handleSyncHookEvent("onStreamNoneReader", param, zlmHookService::onStreamNoneReader);
     }
 
