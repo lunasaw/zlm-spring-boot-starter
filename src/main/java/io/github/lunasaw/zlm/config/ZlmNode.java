@@ -40,6 +40,4 @@ public class ZlmNode {
      * The weight of this host.
      */
     private int weight = 100;
-
-    private long keepalive;
 }

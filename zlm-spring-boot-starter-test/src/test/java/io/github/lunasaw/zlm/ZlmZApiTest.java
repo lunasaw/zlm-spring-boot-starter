@@ -4,7 +4,6 @@ import com.luna.common.thread.AsyncEngineUtils;
 import io.github.lunasaw.zlm.config.ZlmAutoConfiguration;
 import io.github.lunasaw.zlm.config.ZlmNode;
 import io.github.lunasaw.zlm.config.ZlmProperties;
-import io.github.lunasaw.zlm.node.NodeService;
 import io.github.lunasaw.zlm.node.impl.WeightRandomLoadBalancer;
 import lombok.SneakyThrows;
 import org.junit.Test;
@@ -28,9 +27,6 @@ public class ZlmZApiTest {
 
     @Autowired
     private ZlmProperties zlmProperties;
-
-    @Autowired
-    private NodeService nodeService;
 
     @SneakyThrows
     private static void extracted() {
@@ -59,17 +55,23 @@ public class ZlmZApiTest {
         ZlmNode node1 = new ZlmNode();
         node1.setServerId("123");
         node1.setWeight(2);
-        nodeService.addNode(node1);
+        node1.setEnabled(true);
+        zlmProperties.getNodes().add(node1);
+        zlmProperties.getNodeMap().put(node1.getServerId(), node1);
 
         ZlmNode node2 = new ZlmNode();
         node2.setServerId("1234");
         node2.setWeight(1);
-        nodeService.addNode(node2);
+        node2.setEnabled(true);
+        zlmProperties.getNodes().add(node2);
+        zlmProperties.getNodeMap().put(node2.getServerId(), node2);
 
         ZlmNode node3 = new ZlmNode();
         node3.setServerId("12345");
         node3.setWeight(1);
-        nodeService.addNode(node3);
+        node3.setEnabled(true);
+        zlmProperties.getNodes().add(node3);
+        zlmProperties.getNodeMap().put(node3.getServerId(), node3);
 
         AtomicInteger k = new AtomicInteger();
 

@@ -122,21 +122,24 @@ public class ZlmRestService {
      * 获取后台线程负载
      */
     public static ServerResponse<List<ThreadLoad>> getWorkThreadsLoad(String host, String secret) {
-        return executeApiCall(host, secret, ApiConstants.GET_WORK_THREADS_LOAD, new HashMap<>(), new TypeReference<ServerResponse<List<ThreadLoad>>>() {});
+        return executeApiCall(host, secret, ApiConstants.GET_WORK_THREADS_LOAD, new HashMap<>(), new TypeReference<>() {
+        });
     }
 
     /**
      * 获取服务器配置
      */
-    public static ServerResponse<ServerNodeConfig> getServerConfig(String host, String secret) {
-        return executeApiCall(host, secret, ApiConstants.GET_SERVER_CONFIG, new HashMap<>(), new TypeReference<ServerResponse<ServerNodeConfig>>() {});
+    public static ServerResponse<List<ServerNodeConfig>> getServerConfig(String host, String secret) {
+        return executeApiCall(host, secret, ApiConstants.GET_SERVER_CONFIG, new HashMap<>(), new TypeReference<>() {
+        });
     }
 
     /**
      * 设置服务器配置
      */
     public static ServerResponse<String> setServerConfig(String host, String secret, Map<String, String> params) {
-        return executeApiCall(host, secret, ApiConstants.SET_SERVER_CONFIG, params, new TypeReference<ServerResponse<String>>() {});
+        return executeApiCall(host, secret, ApiConstants.SET_SERVER_CONFIG, params, new TypeReference<>() {
+        });
     }
 
     /**

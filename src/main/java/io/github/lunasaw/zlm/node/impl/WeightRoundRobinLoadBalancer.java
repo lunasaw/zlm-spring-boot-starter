@@ -1,70 +1,82 @@
 package io.github.lunasaw.zlm.node.impl;
 
 import io.github.lunasaw.zlm.config.ZlmNode;
-import io.github.lunasaw.zlm.config.ZlmProperties;
 import io.github.lunasaw.zlm.enums.LoadBalancerEnums;
 import io.github.lunasaw.zlm.node.LoadBalancer;
+import io.github.lunasaw.zlm.node.NodeSupplier;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Random;
 
 /**
+ * 加权轮询负载均衡器
+ * 每次选择节点时基于权重进行随机选择，不维护本地状态
  * @author luna
  * @date 2024/1/5
  */
+@Slf4j
 public class WeightRoundRobinLoadBalancer implements LoadBalancer {
 
-    static final AtomicInteger SUM_WEIGHT = new AtomicInteger(0);
-    static final Map<String, Integer> WEIGHT_MAP = new ConcurrentHashMap<>();
-    static final Map<String, Integer> CURRENT_WEIGHT_MAP = new ConcurrentHashMap<>();
+    private final Random random = new Random();
+    private volatile NodeSupplier nodeSupplier;
 
-
-    public WeightRoundRobinLoadBalancer() {
-        init();
-    }
-
-    public void init() {
-        List<String> nodeList = new ArrayList<>(ZlmProperties.nodeMap.keySet());
-        int maxWeight = 0;
-        for (String nodeName : nodeList) {
-            ZlmNode nodeConfig = ZlmProperties.nodeMap.get(nodeName);
-            int weight = nodeConfig.getWeight();
-            WEIGHT_MAP.put(nodeName, weight);
-            maxWeight = Math.max(maxWeight, weight);
-        }
-        int weightSum = ZlmProperties.nodeMap.values().stream().map(ZlmNode::getWeight).reduce(Integer::sum).orElse(0);
-        SUM_WEIGHT.set(weightSum);
-
+    @Override
+    public void setNodeSupplier(NodeSupplier nodeSupplier) {
+        this.nodeSupplier = nodeSupplier;
+        log.info("设置节点提供器: {}", nodeSupplier != null ? nodeSupplier.getName() : "null");
     }
 
     @Override
-    public synchronized ZlmNode selectNode(String key) {
-        WEIGHT_MAP.forEach((nodeName, weight) -> CURRENT_WEIGHT_MAP.put(nodeName, weight + CURRENT_WEIGHT_MAP.getOrDefault(nodeName, 0)));
-
-        // 选择最大的权重
-        String nodeName = CURRENT_WEIGHT_MAP.entrySet().stream().max((o1, o2) -> {
-            int weight1 = o1.getValue();
-            int weight2 = o2.getValue();
-            return Integer.compare(weight1, weight2);
-        }).map(Map.Entry::getKey).orElse(null);
-
-        Integer maxWeight = CURRENT_WEIGHT_MAP.values().stream().reduce(Integer::sum).orElse(0);
-
-        // 修改当前权重
-        if (nodeName != null) {
-            int currentWeight = CURRENT_WEIGHT_MAP.getOrDefault(nodeName, 0);
-            int newWeight = currentWeight - maxWeight;
-            CURRENT_WEIGHT_MAP.put(nodeName, newWeight);
+    public ZlmNode selectNode(String key) {
+        List<ZlmNode> nodes = getCurrentNodes();
+        if (nodes == null || nodes.isEmpty()) {
+            return null;
         }
 
-        return ZlmProperties.nodeMap.get(nodeName);
+        // 计算总权重
+        int totalWeight = nodes.stream().mapToInt(ZlmNode::getWeight).sum();
+        if (totalWeight <= 0) {
+            // 如果总权重为0，则随机选择
+            return nodes.get(random.nextInt(nodes.size()));
+        }
+
+        // 基于权重随机选择
+        int randomNum = random.nextInt(totalWeight);
+        int currentWeight = 0;
+
+        for (ZlmNode node : nodes) {
+            currentWeight += node.getWeight();
+            if (currentWeight > randomNum) {
+                return node;
+            }
+        }
+
+        // 兜底返回最后一个节点
+        return nodes.get(nodes.size() - 1);
     }
 
     @Override
     public String getType() {
         return LoadBalancerEnums.WEIGHT_ROUND_ROBIN.getType();
+    }
+
+    /**
+     * 获取当前可用节点列表
+     *
+     * @return 节点列表
+     */
+    private List<ZlmNode> getCurrentNodes() {
+        if (nodeSupplier == null) {
+            log.warn("NodeSupplier未设置，无法获取节点列表");
+            return null;
+        }
+
+        try {
+            return nodeSupplier.getNodes();
+        } catch (Exception e) {
+            log.error("从NodeSupplier获取节点列表失败", e);
+            return null;
+        }
     }
 }
