@@ -12,6 +12,12 @@ import io.github.lunasaw.zlm.entity.req.SnapshotReq;
 import io.github.lunasaw.zlm.entity.rtp.*;
 import io.github.lunasaw.zlm.node.LoadBalancer;
 import io.github.lunasaw.zlm.node.NodeSupplier;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +40,7 @@ import java.util.Map;
 @RestController
 @ConditionalOnProperty(value = "zlm.enable", havingValue = "true")
 @RequestMapping("/zlm/api")
+@Tag(name = "ZLM媒体服务器管理", description = "ZLMediaKit流媒体服务器管理相关接口")
 public class ZlmApiController {
 
     @Autowired
@@ -82,6 +89,9 @@ public class ZlmApiController {
      * 获取版本信息
      */
     @GetMapping("/version")
+    @Operation(summary = "获取版本信息", description = "获取ZLMediaKit服务器的版本信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
     public ServerResponse<Version> getVersion() {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getVersion(node.getHost(), node.getSecret());
@@ -91,7 +101,11 @@ public class ZlmApiController {
      * 获取API列表
      */
     @GetMapping("/api/list")
-    public ServerResponse<List<String>> getApiList(@RequestParam(required = false) Map<String, String> params) {
+    @Operation(summary = "获取API列表", description = "获取ZLMediaKit服务器支持的所有API接口列表")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<List<String>> getApiList(
+            @Parameter(description = "查询参数") @RequestParam(required = false) Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getApiList(node.getHost(), node.getSecret(), params);
     }
@@ -100,6 +114,9 @@ public class ZlmApiController {
      * 获取网络线程负载
      */
     @GetMapping("/threads/load")
+    @Operation(summary = "获取网络线程负载", description = "获取ZLMediaKit服务器网络线程的负载情况")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
     public ServerResponse<List<ThreadLoad>> getThreadsLoad() {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getThreadsLoad(node.getHost(), node.getSecret());
@@ -109,6 +126,9 @@ public class ZlmApiController {
      * 获取主要对象个数
      */
     @GetMapping("/statistic")
+    @Operation(summary = "获取统计信息", description = "获取ZLMediaKit服务器主要对象的统计数量")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
     public ServerResponse<ImportantObjectNum> getStatistic() {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getStatistic(node.getHost(), node.getSecret());
@@ -118,6 +138,9 @@ public class ZlmApiController {
      * 获取后台线程负载
      */
     @GetMapping("/work-threads/load")
+    @Operation(summary = "获取后台线程负载", description = "获取ZLMediaKit服务器后台工作线程的负载情况")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
     public ServerResponse<List<ThreadLoad>> getWorkThreadsLoad() {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getWorkThreadsLoad(node.getHost(), node.getSecret());
@@ -127,6 +150,9 @@ public class ZlmApiController {
      * 获取服务器配置
      */
     @GetMapping("/server/config")
+    @Operation(summary = "获取服务器配置", description = "获取ZLMediaKit服务器的配置信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
     public ServerResponse<List<ServerNodeConfig>> getServerConfig() {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getServerConfig(node.getHost(), node.getSecret());
@@ -136,7 +162,11 @@ public class ZlmApiController {
      * 设置服务器配置
      */
     @PostMapping("/server/config")
-    public ServerResponse<String> setServerConfig(@RequestBody Map<String, String> params) {
+    @Operation(summary = "设置服务器配置", description = "修改ZLMediaKit服务器的配置参数")
+    @ApiResponse(responseCode = "200", description = "设置成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> setServerConfig(
+            @Parameter(description = "配置参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.setServerConfig(node.getHost(), node.getSecret(), params);
     }
@@ -145,7 +175,11 @@ public class ZlmApiController {
      * 重启服务器
      */
     @PostMapping("/server/restart")
-    public ServerResponse<Object> restartServer(@RequestBody Map<String, String> params) {
+    @Operation(summary = "重启服务器", description = "重启ZLMediaKit服务器")
+    @ApiResponse(responseCode = "200", description = "重启成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<Object> restartServer(
+            @Parameter(description = "重启参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.restartServer(node.getHost(), node.getSecret(), params);
     }
@@ -156,7 +190,11 @@ public class ZlmApiController {
      * 获取流列表
      */
     @PostMapping("/media/list")
-    public ServerResponse<List<MediaData>> getMediaList(@RequestBody MediaReq mediaReq) {
+    @Operation(summary = "获取流列表", description = "获取ZLMediaKit服务器中的媒体流列表")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<List<MediaData>> getMediaList(
+            @Parameter(description = "媒体查询条件") @RequestBody MediaReq mediaReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getMediaList(node.getHost(), node.getSecret(), mediaReq);
     }
@@ -165,7 +203,11 @@ public class ZlmApiController {
      * 关断单个流
      */
     @PostMapping("/media/close")
-    public ServerResponse<String> closeStream(@RequestBody MediaReq mediaReq) {
+    @Operation(summary = "关断单个流", description = "关闭指定的媒体流")
+    @ApiResponse(responseCode = "200", description = "关闭成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> closeStream(
+            @Parameter(description = "媒体流信息") @RequestBody MediaReq mediaReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.closeStream(node.getHost(), node.getSecret(), mediaReq);
     }
@@ -174,7 +216,11 @@ public class ZlmApiController {
      * 批量关断流
      */
     @PostMapping("/media/close-batch")
-    public ServerResponse closeStreams(@RequestBody CloseStreamsReq closeStreamsReq) {
+    @Operation(summary = "批量关断流", description = "批量关闭多个媒体流")
+    @ApiResponse(responseCode = "200", description = "关闭成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse closeStreams(
+            @Parameter(description = "批量关流请求") @RequestBody CloseStreamsReq closeStreamsReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.closeStreams(node.getHost(), node.getSecret(), closeStreamsReq.toMap());
     }
@@ -183,7 +229,11 @@ public class ZlmApiController {
      * 流是否在线
      */
     @PostMapping("/media/online")
-    public MediaOnlineStatus isMediaOnline(@RequestBody MediaReq mediaReq) {
+    @Operation(summary = "检查流是否在线", description = "检查指定媒体流是否在线")
+    @ApiResponse(responseCode = "200", description = "检查成功",
+            content = @Content(schema = @Schema(implementation = MediaOnlineStatus.class)))
+    public MediaOnlineStatus isMediaOnline(
+            @Parameter(description = "媒体流信息") @RequestBody MediaReq mediaReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.isMediaOnline(node.getHost(), node.getSecret(), mediaReq);
     }
@@ -221,8 +271,12 @@ public class ZlmApiController {
      * 获取所有TcpSession列表
      */
     @GetMapping("/session/list")
-    public ServerResponse<List<TcpLink>> getAllSession(@RequestParam(required = false) String localPort,
-                                                      @RequestParam(required = false) String peerIp) {
+    @Operation(summary = "获取TCP会话列表", description = "获取ZLMediaKit服务器中所有TCP连接会话的列表")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<List<TcpLink>> getAllSession(
+            @Parameter(description = "本地端口") @RequestParam(required = false) String localPort,
+            @Parameter(description = "对端IP") @RequestParam(required = false) String peerIp) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getAllSession(node.getHost(), node.getSecret(), localPort, peerIp);
     }
@@ -231,7 +285,11 @@ public class ZlmApiController {
      * 断开tcp连接
      */
     @DeleteMapping("/session/{sessionId}")
-    public ServerResponse<String> kickSession(@PathVariable("sessionId") String sessionId) {
+    @Operation(summary = "断开TCP连接", description = "根据会话ID断开指定的TCP连接")
+    @ApiResponse(responseCode = "200", description = "断开成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> kickSession(
+            @Parameter(description = "会话ID") @PathVariable("sessionId") String sessionId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.kickSession(node.getHost(), node.getSecret(), sessionId);
     }
@@ -251,7 +309,11 @@ public class ZlmApiController {
      * 添加代理拉流
      */
     @PostMapping("/proxy/add")
-    public ServerResponse<StreamKey> addStreamProxy(@RequestBody StreamProxyItem streamProxyItem) {
+    @Operation(summary = "添加代理拉流", description = "添加一个拉流代理，用于从外部拉取媒体流")
+    @ApiResponse(responseCode = "200", description = "添加成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<StreamKey> addStreamProxy(
+            @Parameter(description = "拉流代理配置") @RequestBody StreamProxyItem streamProxyItem) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.addStreamProxy(node.getHost(), node.getSecret(), streamProxyItem);
     }
@@ -260,7 +322,11 @@ public class ZlmApiController {
      * 关闭拉流代理
      */
     @DeleteMapping("/proxy/{key}")
-    public ServerResponse<StreamKey.StringDelFlag> delStreamProxy(@PathVariable("key") String key) {
+    @Operation(summary = "关闭拉流代理", description = "根据代理key关闭指定的拉流代理")
+    @ApiResponse(responseCode = "200", description = "关闭成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<StreamKey.StringDelFlag> delStreamProxy(
+            @Parameter(description = "代理key") @PathVariable("key") String key) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.delStreamProxy(node.getHost(), node.getSecret(), key);
     }
@@ -345,7 +411,11 @@ public class ZlmApiController {
      * 开始录制
      */
     @PostMapping("/record/start")
-    public ServerResponse<String> startRecord(@RequestBody RecordReq recordReq) {
+    @Operation(summary = "开始录制", description = "开始录制指定的媒体流")
+    @ApiResponse(responseCode = "200", description = "录制开始成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> startRecord(
+            @Parameter(description = "录制配置") @RequestBody RecordReq recordReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.startRecord(node.getHost(), node.getSecret(), recordReq);
     }
@@ -372,7 +442,11 @@ public class ZlmApiController {
      * 停止录制
      */
     @PostMapping("/record/stop")
-    public ServerResponse<String> stopRecord(@RequestBody RecordReq recordReq) {
+    @Operation(summary = "停止录制", description = "停止录制指定的媒体流")
+    @ApiResponse(responseCode = "200", description = "录制停止成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> stopRecord(
+            @Parameter(description = "录制配置") @RequestBody RecordReq recordReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.stopRecord(node.getHost(), node.getSecret(), recordReq);
     }
@@ -401,7 +475,11 @@ public class ZlmApiController {
      * 获取截图
      */
     @PostMapping("/snapshot")
-    public String getSnap(@RequestBody SnapshotReq snapshotReq) {
+    @Operation(summary = "获取截图", description = "获取指定媒体流的截图")
+    @ApiResponse(responseCode = "200", description = "截图获取成功",
+            content = @Content(schema = @Schema(implementation = String.class)))
+    public String getSnap(
+            @Parameter(description = "截图配置") @RequestBody SnapshotReq snapshotReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getSnap(node.getHost(), node.getSecret(), snapshotReq);
     }
@@ -412,7 +490,11 @@ public class ZlmApiController {
      * 获取rtp推流信息
      */
     @GetMapping("/rtp/info/{streamId}")
-    public RtpInfoResult getRtpInfo(@PathVariable("streamId") String streamId) {
+    @Operation(summary = "获取RTP推流信息", description = "根据流ID获取RTP推流的详细信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = RtpInfoResult.class)))
+    public RtpInfoResult getRtpInfo(
+            @Parameter(description = "流ID") @PathVariable("streamId") String streamId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getRtpInfo(node.getHost(), node.getSecret(), streamId);
     }
@@ -421,7 +503,11 @@ public class ZlmApiController {
      * 创建RTP服务器
      */
     @PostMapping("/rtp/server/open")
-    public OpenRtpServerResult openRtpServer(@RequestBody OpenRtpServerReq req) {
+    @Operation(summary = "创建RTP服务器", description = "创建一个RTP服务器用于接收RTP推流")
+    @ApiResponse(responseCode = "200", description = "创建成功",
+            content = @Content(schema = @Schema(implementation = OpenRtpServerResult.class)))
+    public OpenRtpServerResult openRtpServer(
+            @Parameter(description = "RTP服务器配置") @RequestBody OpenRtpServerReq req) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.openRtpServer(node.getHost(), node.getSecret(), req);
     }
@@ -448,7 +534,11 @@ public class ZlmApiController {
      * 关闭RTP服务器
      */
     @DeleteMapping("/rtp/server/{streamId}")
-    public CloseRtpServerResult closeRtpServer(@PathVariable("streamId") String streamId) {
+    @Operation(summary = "关闭RTP服务器", description = "根据流ID关闭指定的RTP服务器")
+    @ApiResponse(responseCode = "200", description = "关闭成功",
+            content = @Content(schema = @Schema(implementation = CloseRtpServerResult.class)))
+    public CloseRtpServerResult closeRtpServer(
+            @Parameter(description = "流ID") @PathVariable("streamId") String streamId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.closeRtpServer(node.getHost(), node.getSecret(), streamId);
     }
@@ -564,7 +654,11 @@ public class ZlmApiController {
      * 指定节点获取版本信息
      */
     @GetMapping("/node/{nodeId}/version")
-    public ServerResponse<Version> getVersionByNode(@PathVariable("nodeId") String nodeId) {
+    @Operation(summary = "指定节点获取版本信息", description = "获取指定ZLM节点的版本信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<Version> getVersionByNode(
+            @Parameter(description = "节点ID") @PathVariable("nodeId") String nodeId) {
         ZlmNode node = nodeSupplier.getNode(nodeId);
         if (node == null) {
             throw new IllegalArgumentException("节点不存在: " + nodeId);
@@ -576,7 +670,12 @@ public class ZlmApiController {
      * 指定节点获取流列表
      */
     @PostMapping("/node/{nodeId}/media/list")
-    public ServerResponse<List<MediaData>> getMediaListByNode(@PathVariable(value = "nodeId") String nodeId, @RequestBody MediaReq mediaReq) {
+    @Operation(summary = "指定节点获取流列表", description = "获取指定ZLM节点中的媒体流列表")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<List<MediaData>> getMediaListByNode(
+            @Parameter(description = "节点ID") @PathVariable(value = "nodeId") String nodeId,
+            @Parameter(description = "媒体查询条件") @RequestBody MediaReq mediaReq) {
         ZlmNode node = nodeSupplier.getNode(nodeId);
         if (node == null) {
             throw new IllegalArgumentException("节点不存在: " + nodeId);
@@ -588,6 +687,9 @@ public class ZlmApiController {
      * 获取所有节点列表
      */
     @GetMapping("/nodes")
+    @Operation(summary = "获取所有节点列表", description = "获取当前配置的所有ZLM节点信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = List.class)))
     public List<ZlmNode> getAllNodes() {
         return zlmProperties.getNodes();
     }
