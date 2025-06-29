@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * 节点管理服务
+ * 负载均衡器会通过NodeSupplier实时获取节点列表，所以此服务只需管理配置中的节点
  * @author luna
  * @date 2023/12/4
  */
@@ -42,13 +43,10 @@ public class NodeService {
 
         lock.writeLock().lock();
         try {
-            // 同步到配置中
+            // 更新配置中的节点列表
             zlmProperties.getNodes().removeIf(node -> zlmNode.getServerId().equals(node.getServerId()));
             zlmProperties.getNodes().add(zlmNode);
             zlmProperties.getNodeMap().put(zlmNode.getServerId(), zlmNode);
-
-            // 通知负载均衡器
-            loadBalancer.addNode(zlmNode);
         } finally {
             lock.writeLock().unlock();
         }
@@ -66,12 +64,9 @@ public class NodeService {
 
         lock.writeLock().lock();
         try {
-            // 从配置中移除
+            // 从配置中移除节点
             zlmProperties.getNodes().removeIf(node -> serverId.equals(node.getServerId()));
             zlmProperties.getNodeMap().remove(serverId);
-
-            // 通知负载均衡器
-            loadBalancer.removeNode(serverId);
         } finally {
             lock.writeLock().unlock();
         }
@@ -85,7 +80,7 @@ public class NodeService {
     public List<ZlmNode> getNodes() {
         lock.readLock().lock();
         try {
-            return loadBalancer.getNodes();
+            return zlmProperties.getNodes();
         } finally {
             lock.readLock().unlock();
         }
@@ -100,7 +95,7 @@ public class NodeService {
     public boolean hasNode(String serverId) {
         lock.readLock().lock();
         try {
-            return loadBalancer.hasNode(serverId);
+            return zlmProperties.getNodeMap().containsKey(serverId);
         } finally {
             lock.readLock().unlock();
         }
@@ -133,20 +128,12 @@ public class NodeService {
 
         lock.writeLock().lock();
         try {
-            // 原子性地更新节点：先从配置中移除，再添加新节点
             String serverId = zlmNode.getServerId();
 
-            // 从配置中移除旧节点
+            // 更新配置中的节点
             zlmProperties.getNodes().removeIf(node -> serverId.equals(node.getServerId()));
-            zlmProperties.getNodeMap().remove(serverId);
-
-            // 添加新节点到配置
             zlmProperties.getNodes().add(zlmNode);
             zlmProperties.getNodeMap().put(serverId, zlmNode);
-
-            // 通知负载均衡器：先移除再添加
-            loadBalancer.removeNode(serverId);
-            loadBalancer.addNode(zlmNode);
         } finally {
             lock.writeLock().unlock();
         }
@@ -160,7 +147,6 @@ public class NodeService {
         try {
             zlmProperties.getNodes().clear();
             zlmProperties.getNodeMap().clear();
-            loadBalancer.clear();
         } finally {
             lock.writeLock().unlock();
         }
@@ -171,12 +157,7 @@ public class NodeService {
      * @return 选中的节点
      */
     public ZlmNode selectNode() {
-        lock.readLock().lock();
-        try {
-            return loadBalancer.selectNode(null);
-        } finally {
-            lock.readLock().unlock();
-        }
+        return loadBalancer.selectNode(null);
     }
 
     /**
@@ -185,12 +166,7 @@ public class NodeService {
      * @return 选中的节点
      */
     public ZlmNode selectNode(String key) {
-        lock.readLock().lock();
-        try {
-            return loadBalancer.selectNode(key);
-        } finally {
-            lock.readLock().unlock();
-        }
+        return loadBalancer.selectNode(key);
     }
 
     /**
@@ -199,23 +175,6 @@ public class NodeService {
      * @return 负载均衡器类型
      */
     public String getLoadBalancerType() {
-        lock.readLock().lock();
-        try {
-            return loadBalancer.getType();
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    /**
-     * 重新初始化负载均衡器
-     */
-    public void reinitializeLoadBalancer() {
-        lock.writeLock().lock();
-        try {
-            loadBalancer.init();
-        } finally {
-            lock.writeLock().unlock();
-        }
+        return loadBalancer.getType();
     }
 }

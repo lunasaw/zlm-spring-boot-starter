@@ -1,88 +1,66 @@
 package io.github.lunasaw.zlm.node.impl;
 
 import io.github.lunasaw.zlm.config.ZlmNode;
-import io.github.lunasaw.zlm.config.ZlmProperties;
 import io.github.lunasaw.zlm.enums.LoadBalancerEnums;
 import io.github.lunasaw.zlm.node.LoadBalancer;
+import io.github.lunasaw.zlm.node.NodeSupplier;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 轮询负载均衡器
+ * 每次选择节点时直接从NodeSupplier获取最新节点列表
  * @author luna
  * @date 2024/1/5
  */
+@Slf4j
 public class RoundRobinLoadBalancer implements LoadBalancer {
 
     private final AtomicInteger sequence = new AtomicInteger(0);
-    private final List<ZlmNode> nodes = new CopyOnWriteArrayList<>();
-
-    public RoundRobinLoadBalancer() {
-        init();
-    }
+    private volatile NodeSupplier nodeSupplier;
 
     @Override
-    public void init() {
-        nodes.clear();
+    public void setNodeSupplier(NodeSupplier nodeSupplier) {
+        this.nodeSupplier = nodeSupplier;
+        // 重置序号
         sequence.set(0);
-        // 从配置中初始化节点
-        if (ZlmProperties.nodes != null) {
-            nodes.addAll(ZlmProperties.nodes);
-        }
-    }
-
-    @Override
-    public void addNode(ZlmNode node) {
-        if (node != null && !hasNodeInternal(node.getServerId())) {
-            nodes.add(node);
-        }
-    }
-
-    @Override
-    public void removeNode(String serverId) {
-        if (serverId != null) {
-            nodes.removeIf(node -> serverId.equals(node.getServerId()));
-            // 重置序号避免越界
-            if (!nodes.isEmpty()) {
-                sequence.set(sequence.get() % nodes.size());
-            }
-        }
-    }
-
-    @Override
-    public List<ZlmNode> getNodes() {
-        return new ArrayList<>(nodes);
-    }
-
-    @Override
-    public boolean hasNode(String serverId) {
-        return hasNodeInternal(serverId);
-    }
-
-    private boolean hasNodeInternal(String serverId) {
-        return nodes.stream().anyMatch(node -> serverId.equals(node.getServerId()));
+        log.info("设置节点提供器: {}", nodeSupplier != null ? nodeSupplier.getName() : "null");
     }
 
     @Override
     public ZlmNode selectNode(String key) {
-        if (nodes.isEmpty()) {
+        List<ZlmNode> nodes = getCurrentNodes();
+        if (nodes == null || nodes.isEmpty()) {
             return null;
         }
+
         int index = sequence.getAndIncrement() % nodes.size();
         return nodes.get(index);
     }
 
     @Override
-    public void clear() {
-        nodes.clear();
-        sequence.set(0);
-    }
-
-    @Override
     public String getType() {
         return LoadBalancerEnums.ROUND_ROBIN.getType();
+    }
+
+    /**
+     * 获取当前可用节点列表
+     *
+     * @return 节点列表
+     */
+    private List<ZlmNode> getCurrentNodes() {
+        if (nodeSupplier == null) {
+            log.warn("NodeSupplier未设置，无法获取节点列表");
+            return null;
+        }
+
+        try {
+            return nodeSupplier.getNodes();
+        } catch (Exception e) {
+            log.error("从NodeSupplier获取节点列表失败", e);
+            return null;
+        }
     }
 }
