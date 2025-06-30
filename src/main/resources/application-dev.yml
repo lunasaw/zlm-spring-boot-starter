@@ -1,5 +1,6 @@
 zlm:
   enable: true
+  hook-enable: true
   balance: round_robin
   nodes:
     - server-id: zlm

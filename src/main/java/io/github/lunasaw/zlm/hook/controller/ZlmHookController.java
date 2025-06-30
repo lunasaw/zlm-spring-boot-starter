@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +19,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -64,6 +67,29 @@ public class ZlmHookController {
     }
 
     /**
+     * 处理同步Hook事件的通用方法（带HttpServletRequest参数）
+     *
+     * @param hookName Hook事件名称，用于日志输出
+     * @param param    Hook参数
+     * @param request  HTTP请求对象
+     * @param function Hook处理函数
+     * @param <T>      参数类型
+     * @param <R>      返回类型
+     * @return Hook响应结果
+     */
+    private <T, R> R handleSyncHookEventWithRequest(String hookName, T param, HttpServletRequest request, BiFunction<T, HttpServletRequest, R> function) {
+        try {
+            log.info("{}::param = {}", hookName, JSON.toJSONString(param));
+            R result = function.apply(param, request);
+            log.info("{} success, result = {}", hookName, JSON.toJSONString(result));
+            return result;
+        } catch (Exception e) {
+            log.error("{} fail, param = {}", hookName, JSON.toJSONString(param), e);
+            throw e;
+        }
+    }
+
+    /**
      * 处理异步Hook事件的通用方法
      *
      * @param hookName Hook事件名称，用于日志输出
@@ -91,6 +117,34 @@ public class ZlmHookController {
     }
 
     /**
+     * 处理异步Hook事件的通用方法（带HttpServletRequest参数）
+     *
+     * @param hookName Hook事件名称，用于日志输出
+     * @param param    Hook参数
+     * @param request  HTTP请求对象
+     * @param consumer Hook处理函数
+     * @param <T>      参数类型
+     * @return Hook响应结果（异步处理总是返回SUCCESS）
+     */
+    private <T> HookResult handleAsyncHookEventWithRequest(String hookName, T param, HttpServletRequest request, BiConsumer<T, HttpServletRequest> consumer) {
+        try {
+            log.info("{}::param = {}", hookName, JSON.toJSONString(param));
+            executor.execute(() -> {
+                try {
+                    consumer.accept(param, request);
+                    log.info("{} async success", hookName);
+                } catch (Exception e) {
+                    log.error("{} async fail, param = {}", hookName, JSON.toJSONString(param), e);
+                }
+            });
+            return HookResult.SUCCESS();
+        } catch (Exception e) {
+            log.error("{} fail, param = {}", hookName, JSON.toJSONString(param), e);
+            return HookResult.SUCCESS();
+        }
+    }
+
+    /**
      * 服务器定时上报时间，上报间隔可配置，默认10s上报一次
      *
      * @param param
@@ -101,8 +155,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onServerKeepalive(
-            @Parameter(description = "服务器心跳参数") @RequestBody OnServerKeepaliveHookParam param) {
-        return handleAsyncHookEvent("onServerKeepalive", param, zlmHookService::onServerKeepLive);
+            @Parameter(description = "服务器心跳参数") @RequestBody OnServerKeepaliveHookParam param, HttpServletRequest request) {
+        return handleAsyncHookEventWithRequest("onServerKeepalive", param, request, zlmHookService::onServerKeepLive);
     }
 
     /**
@@ -114,8 +168,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "鉴权成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onPlay(
-            @Parameter(description = "播放鉴权参数") @RequestBody OnPlayHookParam param) {
-        return handleSyncHookEvent("onPlay", param, zlmHookService::onPlay);
+            @Parameter(description = "播放鉴权参数") @RequestBody OnPlayHookParam param, HttpServletRequest request) {
+        return handleSyncHookEventWithRequest("onPlay", param, request, zlmHookService::onPlay);
     }
 
     /**
@@ -127,8 +181,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "鉴权成功",
             content = @Content(schema = @Schema(implementation = HookResultForOnPublish.class)))
     public HookResultForOnPublish onPublish(
-            @Parameter(description = "推流鉴权参数") @RequestBody OnPublishHookParam param) {
-        return handleSyncHookEvent("onPublish", param, zlmHookService::onPublish);
+            @Parameter(description = "推流鉴权参数") @RequestBody OnPublishHookParam param, HttpServletRequest request) {
+        return handleSyncHookEventWithRequest("onPublish", param, request, zlmHookService::onPublish);
     }
 
     /**
@@ -140,8 +194,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onStreamChanged(
-            @Parameter(description = "流状态变化参数") @RequestBody OnStreamChangedHookParam param) {
-        return handleAsyncHookEvent("onStreamChanged", param, zlmHookService::onStreamChanged);
+            @Parameter(description = "流状态变化参数") @RequestBody OnStreamChangedHookParam param, HttpServletRequest request) {
+        return handleAsyncHookEventWithRequest("onStreamChanged", param, request, zlmHookService::onStreamChanged);
     }
 
     /**
@@ -153,8 +207,8 @@ public class ZlmHookController {
      */
     @ResponseBody
     @PostMapping(value = "/on_stream_none_reader", produces = "application/json;charset=UTF-8")
-    public HookResultForStreamNoneReader onStreamNoneReader(@RequestBody OnStreamNoneReaderHookParam param) {
-        return handleSyncHookEvent("onStreamNoneReader", param, zlmHookService::onStreamNoneReader);
+    public HookResultForStreamNoneReader onStreamNoneReader(@RequestBody OnStreamNoneReaderHookParam param, HttpServletRequest request) {
+        return handleSyncHookEventWithRequest("onStreamNoneReader", param, request, zlmHookService::onStreamNoneReader);
     }
 
     /**
@@ -168,8 +222,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onStreamNotFound(
-            @Parameter(description = "流未找到参数") @RequestBody OnStreamNotFoundHookParam param) {
-        return handleAsyncHookEvent("onStreamNotFound", param, zlmHookService::onStreamNotFound);
+            @Parameter(description = "流未找到参数") @RequestBody OnStreamNotFoundHookParam param, HttpServletRequest request) {
+        return handleAsyncHookEventWithRequest("onStreamNotFound", param, request, zlmHookService::onStreamNotFound);
     }
 
     /**
@@ -181,9 +235,9 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onServerStarted(
-            @Parameter(description = "服务器配置参数") @RequestBody ServerNodeConfig param) {
+            @Parameter(description = "服务器配置参数") @RequestBody ServerNodeConfig param, HttpServletRequest request) {
         log.info("onServerStarted::param = {}", param);
-        executor.execute(() -> zlmHookService.onServerStarted(param));
+        executor.execute(() -> zlmHookService.onServerStarted(param, request));
         return HookResult.SUCCESS();
     }
 
@@ -193,8 +247,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onServerExited(
-            @Parameter(description = "钩子参数") @RequestBody HookParam param) {
-        return handleAsyncHookEvent("onServerExited", param, zlmHookService::onServerExited);
+            @Parameter(description = "钩子参数") @RequestBody HookParam param, HttpServletRequest request) {
+        return handleAsyncHookEventWithRequest("onServerExited", param, request, zlmHookService::onServerExited);
     }
 
     /**
@@ -206,8 +260,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onSendRtpStopped(
-            @Parameter(description = "RTP发送停止参数") @RequestBody OnSendRtpStoppedHookParam param) {
-        return handleAsyncHookEvent("onSendRtpStopped", param, zlmHookService::onSendRtpStopped);
+            @Parameter(description = "RTP发送停止参数") @RequestBody OnSendRtpStoppedHookParam param, HttpServletRequest request) {
+        return handleAsyncHookEventWithRequest("onSendRtpStopped", param, request, zlmHookService::onSendRtpStopped);
     }
 
     /**
@@ -220,8 +274,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onRtpServerTimeout(
-            @Parameter(description = "RTP服务器超时参数") @RequestBody OnRtpServerTimeoutHookParam param) {
-        return handleAsyncHookEvent("onRtpServerTimeout", param, zlmHookService::onRtpServerTimeout);
+            @Parameter(description = "RTP服务器超时参数") @RequestBody OnRtpServerTimeoutHookParam param, HttpServletRequest request) {
+        return handleAsyncHookEventWithRequest("onRtpServerTimeout", param, request, zlmHookService::onRtpServerTimeout);
     }
 
     /**
@@ -236,8 +290,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "访问成功",
             content = @Content(schema = @Schema(implementation = HookResultForOnHttpAccess.class)))
     public HookResultForOnHttpAccess onHttpAccess(
-            @Parameter(description = "HTTP访问参数") @RequestBody OnHttpAccessParam param) {
-        return handleSyncHookEvent("onHttpAccess", param, zlmHookService::onHttpAccess);
+            @Parameter(description = "HTTP访问参数") @RequestBody OnHttpAccessParam param, HttpServletRequest request) {
+        return handleSyncHookEventWithRequest("onHttpAccess", param, request, zlmHookService::onHttpAccess);
     }
 
     /**
@@ -254,8 +308,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "鉴权成功",
             content = @Content(schema = @Schema(implementation = HookResultForOnRtspRealm.class)))
     public HookResultForOnRtspRealm onRtspRealm(
-            @Parameter(description = "RTSP域鉴权参数") @RequestBody OnRtspRealmHookParam param) {
-        return handleSyncHookEvent("onRtspRealm", param, zlmHookService::onRtspRealm);
+            @Parameter(description = "RTSP域鉴权参数") @RequestBody OnRtspRealmHookParam param, HttpServletRequest request) {
+        return handleSyncHookEventWithRequest("onRtspRealm", param, request, zlmHookService::onRtspRealm);
     }
 
     /**
@@ -270,8 +324,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "鉴权成功",
             content = @Content(schema = @Schema(implementation = HookResultForOnRtspAuth.class)))
     public HookResultForOnRtspAuth onRtspAuth(
-            @Parameter(description = "RTSP鉴权参数") @RequestBody OnRtspAuthHookParam param) {
-        return handleSyncHookEvent("onRtspAuth", param, zlmHookService::onRtspAuth);
+            @Parameter(description = "RTSP鉴权参数") @RequestBody OnRtspAuthHookParam param, HttpServletRequest request) {
+        return handleSyncHookEventWithRequest("onRtspAuth", param, request, zlmHookService::onRtspAuth);
     }
 
     /**
@@ -287,8 +341,8 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onFlowReport(
-            @Parameter(description = "流量统计参数") @RequestBody OnFlowReportHookParam param) {
-        return handleAsyncHookEvent("onFlowReport", param, zlmHookService::onFlowReport);
+            @Parameter(description = "流量统计参数") @RequestBody OnFlowReportHookParam param, HttpServletRequest request) {
+        return handleAsyncHookEventWithRequest("onFlowReport", param, request, zlmHookService::onFlowReport);
     }
 
     @ResponseBody
@@ -297,7 +351,7 @@ public class ZlmHookController {
     @ApiResponse(responseCode = "200", description = "处理成功",
             content = @Content(schema = @Schema(implementation = HookResult.class)))
     public HookResult onRecordMp4(
-            @Parameter(description = "MP4录制参数") @RequestBody OnRecordMp4HookParam param) {
-        return handleAsyncHookEvent("onRecordMp4", param, zlmHookService::onRecordMp4);
+            @Parameter(description = "MP4录制参数") @RequestBody OnRecordMp4HookParam param, HttpServletRequest request) {
+        return handleAsyncHookEventWithRequest("onRecordMp4", param, request, zlmHookService::onRecordMp4);
     }
 }
