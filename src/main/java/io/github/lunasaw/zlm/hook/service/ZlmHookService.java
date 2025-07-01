@@ -2,10 +2,11 @@ package io.github.lunasaw.zlm.hook.service;
 
 import io.github.lunasaw.zlm.entity.ServerNodeConfig;
 import io.github.lunasaw.zlm.hook.param.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * <a href="https://github.com/zlmediakit/ZLMediaKit/wiki/MediaServer%E6%94%AF%E6%8C%81%E7%9A%84HTTP-HOOK-API">...</a>
- * 
+ *
  * @author luna
  * @version 1.0
  * @date 2023/12/3
@@ -13,33 +14,33 @@ import io.github.lunasaw.zlm.hook.param.*;
  */
 public interface ZlmHookService {
 
-    void onServerKeepLive(OnServerKeepaliveHookParam param);
+    void onServerKeepLive(OnServerKeepaliveHookParam param, HttpServletRequest request);
 
-    HookResult onPlay(OnPlayHookParam param);
+    HookResult onPlay(OnPlayHookParam param, HttpServletRequest request);
 
-    HookResultForOnPublish onPublish(OnPublishHookParam param);
+    HookResultForOnPublish onPublish(OnPublishHookParam param, HttpServletRequest request);
 
-    void onStreamChanged(OnStreamChangedHookParam param);
+    void onStreamChanged(OnStreamChangedHookParam param, HttpServletRequest request);
 
-    HookResultForStreamNoneReader onStreamNoneReader(OnStreamNoneReaderHookParam param);
+    HookResultForStreamNoneReader onStreamNoneReader(OnStreamNoneReaderHookParam param, HttpServletRequest request);
 
-    void onStreamNotFound(OnStreamNotFoundHookParam param);
+    void onStreamNotFound(OnStreamNotFoundHookParam param, HttpServletRequest request);
 
-    void onServerStarted(ServerNodeConfig param);
+    void onServerStarted(ServerNodeConfig param, HttpServletRequest request);
 
-    void onSendRtpStopped(OnSendRtpStoppedHookParam param);
+    void onSendRtpStopped(OnSendRtpStoppedHookParam param, HttpServletRequest request);
 
-    void onRtpServerTimeout(OnRtpServerTimeoutHookParam param);
+    void onRtpServerTimeout(OnRtpServerTimeoutHookParam param, HttpServletRequest request);
 
-    HookResultForOnHttpAccess onHttpAccess(OnHttpAccessParam param);
+    HookResultForOnHttpAccess onHttpAccess(OnHttpAccessParam param, HttpServletRequest request);
 
-    HookResultForOnRtspRealm onRtspRealm(OnRtspRealmHookParam param);
+    HookResultForOnRtspRealm onRtspRealm(OnRtspRealmHookParam param, HttpServletRequest request);
 
-    HookResultForOnRtspAuth onRtspAuth(OnRtspAuthHookParam param);
+    HookResultForOnRtspAuth onRtspAuth(OnRtspAuthHookParam param, HttpServletRequest request);
 
-    void onFlowReport(OnFlowReportHookParam param);
+    void onFlowReport(OnFlowReportHookParam param, HttpServletRequest request);
 
-    void onServerExited(HookParam param);
+    void onServerExited(HookParam param, HttpServletRequest request);
 
-    void onRecordMp4(OnRecordMp4HookParam param);
+    void onRecordMp4(OnRecordMp4HookParam param, HttpServletRequest request);
 }

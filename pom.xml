@@ -20,7 +20,7 @@
         <luna-common.version>2.6.5</luna-common.version>
         <github.username>lunasaw</github.username>
         <app.profiles>${project.name}</app.profiles>
-        <zlm-spring-boot-starter.version>1.0.5</zlm-spring-boot-starter.version>
+        <zlm-spring-boot-starter.version>1.0.6-SNAPSHOT</zlm-spring-boot-starter.version>
     </properties>
 
     <developers>
@@ -79,6 +79,18 @@
         <dependency>
             <groupId>io.github.lunasaw</groupId>
             <artifactId>luna-common</artifactId>
+        </dependency>
+
+        <!-- OpenAPI/Swagger 依赖 -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.8.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>2.8.9</version>
         </dependency>
     </dependencies>
 
