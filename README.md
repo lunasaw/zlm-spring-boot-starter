@@ -24,12 +24,16 @@ API进行了完整封装，并提供了Hook事件处理机制，支持集群化�
 - 📊 **监控支持**: 提供流媒体状态监控和统计信息获取
 - 🎬 **流媒体管理**: 支持流的推拉、录制、截图等完整功能
 - 🔐 **安全认证**: 支持RTSP认证和HTTP访问控制
+- 🌐 **REST API控制器**: 内置完整的HTTP REST API控制器，直接提供Web接口
+- 📖 **API文档集成**: 集成OpenAPI/Swagger，自动生成API文档
+- 🔄 **自动数据库类型检测**: 支持多种数据库的自动检测和适配
 
 ## 系统要求
 
 - Java 17+
 - Spring Boot 3.5.3+
 - ZLMediaKit服务器
+- 支持Jakarta EE规范（使用jakarta包而非javax包）
 
 ## 快速开始
 
@@ -40,7 +44,7 @@ API进行了完整封装，并提供了Hook事件处理机制，支持集群化�
 <dependency>
     <groupId>io.github.lunasaw</groupId>
     <artifactId>zlm-spring-boot-starter</artifactId>
-    <version>${last.version}</version>
+    <version>1.0.6</version>
 </dependency>
 ```
 
@@ -67,7 +71,7 @@ zlm:
 
 ### 3. 使用REST API
 
-直接调用静态方法使用REST API：
+#### 方式一：直接调用静态方法
 
 ```java
 import io.github.lunasaw.zlm.api.ZlmRestService;
@@ -76,26 +80,42 @@ import io.github.lunasaw.zlm.entity.Version;
 
 // 获取服务器版本信息
 ServerResponse<Version> versionResponse = ZlmRestService.getVersion("http://127.0.0.1:9092", "zlm");
-System.out.
+System.out.println("ZLMediaKit版本: " + versionResponse.getData().getVersion());
 
-        println("ZLMediaKit版本: "+versionResponse.getData().
-
-        getVersion());
-
-        // 获取流列表
-        ServerResponse<List<MediaData>> mediaList = ZlmRestService.getMediaList("http://127.0.0.1:9092", "zlm", new HashMap<>());
-mediaList.
-
-        getData().
-
-        forEach(media ->{
-        System.out.
-
-        println("流ID: "+media.getApp() +"/"+media.
-
-        getStream());
-        });
+// 获取流列表
+ServerResponse<List<MediaData>> mediaList = ZlmRestService.getMediaList("http://127.0.0.1:9092", "zlm", new HashMap<>());
+mediaList.getData().forEach(media -> {
+    System.out.println("流ID: " + media.getApp() + "/" + media.getStream());
+});
 ```
+
+#### 方式二：使用内置API控制器
+
+项目内置了完整的REST API控制器，可以直接通过HTTP接口访问：
+
+```bash
+# 获取服务器版本信息
+GET http://localhost:8080/zlm/api/version
+
+# 获取流列表
+POST http://localhost:8080/zlm/api/media/list
+Content-Type: application/json
+{
+  "app": "live",
+  "stream": ""
+}
+
+# 获取API文档
+GET http://localhost:8080/swagger-ui.html
+```
+
+支持的API接口路径前缀：`/zlm/api/`，包括：
+
+- 服务器管理：`/zlm/api/version`、`/zlm/api/server/config`
+- 流媒体管理：`/zlm/api/media/list`、`/zlm/api/media/close`
+- 代理管理：`/zlm/api/proxy/add`、`/zlm/api/proxy/delete`
+- 录制管理：`/zlm/api/record/start`、`/zlm/api/record/stop`
+- RTP管理：`/zlm/api/rtp/open`、`/zlm/api/rtp/close`
 
 ### 4. 实现Hook服务
 
@@ -425,7 +445,6 @@ FAILED(401,"未授权");    // 拒绝访问
 系统默认提供`DefaultNodeSupplier`实现，从配置文件中获取节点列表：
 
 ```java
-
 @Component
 public class DefaultNodeSupplier implements NodeSupplier {
     @Autowired
@@ -440,6 +459,11 @@ public class DefaultNodeSupplier implements NodeSupplier {
     public List<ZlmNode> getNodes() {
         return zlmProperties.getNodes();
     }
+
+    @Override
+    public ZlmNode getNode(String serverId) {
+        return zlmProperties.getNodeMap().get(serverId);
+    }
 }
 ```
 
@@ -448,7 +472,6 @@ public class DefaultNodeSupplier implements NodeSupplier {
 可以实现自定义的NodeSupplier来支持动态节点发现：
 
 ```java
-
 @Component
 public class DatabaseNodeSupplier implements NodeSupplier {
 
@@ -469,6 +492,12 @@ public class DatabaseNodeSupplier implements NodeSupplier {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public ZlmNode getNode(String serverId) {
+        NodeEntity entity = nodeRepository.findByServerId(serverId);
+        return entity != null ? convertToZlmNode(entity) : null;
+    }
+
     private ZlmNode convertToZlmNode(NodeEntity entity) {
         ZlmNode node = new ZlmNode();
         node.setServerId(entity.getServerId());
@@ -486,7 +515,6 @@ public class DatabaseNodeSupplier implements NodeSupplier {
 与Spring Cloud集成，从注册中心动态发现节点：
 
 ```java
-
 @Component
 public class EurekaNodeSupplier implements NodeSupplier {
 
@@ -505,6 +533,16 @@ public class EurekaNodeSupplier implements NodeSupplier {
                 .filter(ServiceInstance::isSecure)
                 .map(this::convertToZlmNode)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ZlmNode getNode(String serverId) {
+        List<ServiceInstance> instances = discoveryClient.getInstances("zlm-service");
+        return instances.stream()
+                .filter(instance -> serverId.equals(instance.getInstanceId()))
+                .findFirst()
+                .map(this::convertToZlmNode)
+                .orElse(null);
     }
 
     private ZlmNode convertToZlmNode(ServiceInstance instance) {
