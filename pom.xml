@@ -20,7 +20,7 @@
         <luna-common.version>2.6.5</luna-common.version>
         <github.username>lunasaw</github.username>
         <app.profiles>${project.name}</app.profiles>
-        <zlm-spring-boot-starter.version>1.0.6</zlm-spring-boot-starter.version>
+        <zlm-spring-boot-starter.version>1.0.7</zlm-spring-boot-starter.version>
     </properties>
 
     <developers>
