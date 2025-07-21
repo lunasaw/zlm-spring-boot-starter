@@ -20,7 +20,7 @@
         <luna-common.version>2.6.5</luna-common.version>
         <github.username>lunasaw</github.username>
         <app.profiles>${project.name}</app.profiles>
-        <zlm-spring-boot-starter.version>1.0.7</zlm-spring-boot-starter.version>
+        <zlm-spring-boot-starter.version>1.0.8</zlm-spring-boot-starter.version>
     </properties>
 
     <developers>
@@ -146,7 +146,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
+                        <version>1.7.0</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
