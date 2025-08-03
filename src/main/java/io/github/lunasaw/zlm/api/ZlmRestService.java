@@ -308,15 +308,11 @@ public class ZlmRestService {
     }
 
     public static ServerResponse<MediaInfo> getMediaInfo(String host, String secret, MediaReq mediaReq) {
-        return executeApiCall(host, secret, ApiConstants.GET_MEDIA_INFO, mediaReq, new TypeReference<ServerResponse<MediaInfo>>() {}, MediaReq::toMap);
+        MediaInfo mediaInfo = executeApiCall(host, secret, ApiConstants.GET_MEDIA_INFO, mediaReq, new TypeReference<MediaInfo>() {
+        }, MediaReq::toMap);
+        return ServerResponse.success(mediaInfo);
     }
 
-    /**
-     * 获取流信息
-     */
-    public static ServerResponse<MediaInfo> getMediaInfo(String host, String secret, Map<String, String> params) {
-        return executeApiCall(host, secret, ApiConstants.GET_MEDIA_INFO, params, new TypeReference<ServerResponse<MediaInfo>>() {});
-    }
 
     public static ServerResponse<Mp4RecordFile> getMp4RecordFile(String host, String secret, RecordReq recordReq) {
         return executeApiCall(host, secret, ApiConstants.GET_MP4_RECORD_FILE, recordReq, new TypeReference<ServerResponse<Mp4RecordFile>>() {}, RecordReq::toMap);

@@ -12,18 +12,6 @@ import java.util.List;
 public class MediaInfo {
 
     /**
-     * 状态码。
-     */
-    @JSONField(name = "code")
-    private int         code;
-
-    /**
-     * 会话是否在线。
-     */
-    @JSONField(name = "online")
-    private boolean     online;
-
-    /**
      * 本协议的观看人数。
      */
     @JSONField(name = "readerCount")
@@ -40,6 +28,96 @@ public class MediaInfo {
      */
     @JSONField(name = "tracks")
     private List<Track> tracks;
+
+    /**
+     * 存活时间，单位秒。
+     */
+    @JSONField(name = "aliveSecond")
+    private int aliveSecond;
+
+    /**
+     * 应用名。
+     */
+    @JSONField(name = "app")
+    private String app;
+
+    /**
+     * 数据产生速度，单位byte/s。
+     */
+    @JSONField(name = "bytesSpeed")
+    private long bytesSpeed;
+
+    /**
+     * 数据产生时间戳。
+     */
+    @JSONField(name = "createStamp")
+    private long createStamp;
+
+    /**
+     * 是否正在录制HLS。
+     */
+    @JSONField(name = "isRecordingHLS")
+    private boolean isRecordingHLS;
+
+    /**
+     * 是否正在录制MP4。
+     */
+    @JSONField(name = "isRecordingMP4")
+    private boolean isRecordingMP4;
+
+    /**
+     * 源套接字信息。
+     */
+    @JSONField(name = "originSock")
+    private OriginSock originSock;
+
+    /**
+     * 源类型编号。
+     */
+    @JSONField(name = "originType")
+    private int originType;
+
+    /**
+     * 源类型字符串。
+     */
+    @JSONField(name = "originTypeStr")
+    private String originTypeStr;
+
+    /**
+     * 源URL。
+     */
+    @JSONField(name = "originUrl")
+    private String originUrl;
+
+    /**
+     * 参数。
+     */
+    @JSONField(name = "params")
+    private String params;
+
+    /**
+     * 协议。
+     */
+    @JSONField(name = "schema")
+    private String schema;
+
+    /**
+     * 流ID。
+     */
+    @JSONField(name = "stream")
+    private String stream;
+
+    /**
+     * 累计接收数据总字节数。
+     */
+    @JSONField(name = "totalBytes")
+    private long totalBytes;
+
+    /**
+     * 虚拟主机。
+     */
+    @JSONField(name = "vhost")
+    private String vhost;
 
     // Getters and setters...
 

@@ -35,7 +35,7 @@ public class Track {
      * 视频的帧率。
      */
     @JSONField(name = "fps")
-    private int     fps;
+    private double fps;
 
     /**
      * 视频的高度。
@@ -81,11 +81,24 @@ public class Track {
      * gop大小，单位帧数
      */
     @JSONField(name = "gop_size")
-    public int      gopSzize;
+    public int gopSize;
     /**
      * 累计接收关键帧数
      */
     @JSONField(name = "key_frames")
     public int      keyFrames;
+
+    /**
+     * 轨道时长，单位毫秒
+     */
+    @JSONField(name = "duration")
+    public long duration;
+
+    /**
+     * 丢包率，-1表示未知
+     */
+    @JSONField(name = "loss")
+    public double loss;
+
     // Getters and setters...
 }

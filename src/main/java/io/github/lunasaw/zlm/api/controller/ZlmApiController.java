@@ -242,7 +242,11 @@ public class ZlmApiController {
      * 获取媒体流播放器列表
      */
     @PostMapping("/media/player/list")
-    public ServerResponse<MediaPlayer> getMediaPlayerList(@RequestBody MediaReq mediaReq) {
+    @Operation(summary = "获取媒体流播放器列表", description = "获取指定媒体流的播放器列表")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<MediaPlayer> getMediaPlayerList(
+            @Parameter(description = "媒体流信息") @RequestBody MediaReq mediaReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getMediaPlayerList(node.getHost(), node.getSecret(), mediaReq);
     }
@@ -251,7 +255,11 @@ public class ZlmApiController {
      * 获取流信息
      */
     @PostMapping("/media/info")
-    public ServerResponse<MediaInfo> getMediaInfo(@RequestBody MediaReq mediaReq) {
+    @Operation(summary = "获取流信息", description = "获取指定媒体流的详细信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<MediaInfo> getMediaInfo(
+            @Parameter(description = "媒体流信息") @RequestBody MediaReq mediaReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getMediaInfo(node.getHost(), node.getSecret(), mediaReq);
     }
@@ -260,7 +268,11 @@ public class ZlmApiController {
      * 广播webrtc datachannel消息
      */
     @PostMapping("/broadcast/message")
-    public ServerResponse broadcastMessage(@RequestBody Map<String, String> params) {
+    @Operation(summary = "广播WebRTC消息", description = "广播WebRTC datachannel消息")
+    @ApiResponse(responseCode = "200", description = "广播成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse broadcastMessage(
+            @Parameter(description = "消息参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.broadcastMessage(node.getHost(), node.getSecret(), params);
     }
@@ -298,7 +310,11 @@ public class ZlmApiController {
      * 批量断开tcp连接
      */
     @PostMapping("/session/kick-batch")
-    public ServerResponse<String> kickSessions(@RequestBody Map<String, String> params) {
+    @Operation(summary = "批量断开TCP连接", description = "根据条件批量断开TCP连接")
+    @ApiResponse(responseCode = "200", description = "断开成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> kickSessions(
+            @Parameter(description = "查询条件") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.kickSessions(node.getHost(), node.getSecret(), params);
     }
@@ -335,7 +351,11 @@ public class ZlmApiController {
      * 获取拉流代理信息
      */
     @PostMapping("/proxy/info")
-    public ServerResponse getProxyInfo(@RequestBody Map<String, String> params) {
+    @Operation(summary = "获取拉流代理信息", description = "获取拉流代理的详细信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse getProxyInfo(
+            @Parameter(description = "查询参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getProxyInfo(node.getHost(), node.getSecret(), params);
     }
@@ -344,7 +364,11 @@ public class ZlmApiController {
      * 添加推流代理
      */
     @PostMapping("/pusher/add")
-    public ServerResponse<StreamKey> addStreamPusherProxy(@RequestBody StreamPusherItem streamPusherItem) {
+    @Operation(summary = "添加推流代理", description = "添加一个推流代理，用于向外部推送媒体流")
+    @ApiResponse(responseCode = "200", description = "添加成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<StreamKey> addStreamPusherProxy(
+            @Parameter(description = "推流代理配置") @RequestBody StreamPusherItem streamPusherItem) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.addStreamPusherProxy(node.getHost(), node.getSecret(), streamPusherItem);
     }
@@ -353,7 +377,11 @@ public class ZlmApiController {
      * 关闭推流代理
      */
     @DeleteMapping("/pusher/{key}")
-    public ServerResponse<StreamKey.StringDelFlag> delStreamPusherProxy(@PathVariable("key") String key) {
+    @Operation(summary = "关闭推流代理", description = "根据代理key关闭指定的推流代理")
+    @ApiResponse(responseCode = "200", description = "关闭成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<StreamKey.StringDelFlag> delStreamPusherProxy(
+            @Parameter(description = "代理key") @PathVariable("key") String key) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.delStreamPusherProxy(node.getHost(), node.getSecret(), key);
     }
@@ -362,7 +390,11 @@ public class ZlmApiController {
      * 获取推流代理信息
      */
     @PostMapping("/pusher/info")
-    public ServerResponse getProxyPusherInfo(@RequestBody Map<String, String> params) {
+    @Operation(summary = "获取推流代理信息", description = "获取推流代理的详细信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse getProxyPusherInfo(
+            @Parameter(description = "查询参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getProxyPusherInfo(node.getHost(), node.getSecret(), params);
     }
@@ -373,7 +405,11 @@ public class ZlmApiController {
      * 添加FFmpeg拉流代理
      */
     @PostMapping("/ffmpeg/add")
-    public ServerResponse<StreamKey> addFFmpegSource(@RequestBody StreamFfmpegItem streamFfmpegItem) {
+    @Operation(summary = "添加FFmpeg拉流代理", description = "添加一个FFmpeg拉流代理，用于从外部拉取媒体流")
+    @ApiResponse(responseCode = "200", description = "添加成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<StreamKey> addFFmpegSource(
+            @Parameter(description = "FFmpeg配置") @RequestBody StreamFfmpegItem streamFfmpegItem) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.addFFmpegSource(node.getHost(), node.getSecret(), streamFfmpegItem);
     }
@@ -382,7 +418,11 @@ public class ZlmApiController {
      * 关闭FFmpeg拉流代理
      */
     @DeleteMapping("/ffmpeg/{key}")
-    public ServerResponse<StreamKey.StringDelFlag> delFFmpegSource(@PathVariable("key") String key) {
+    @Operation(summary = "关闭FFmpeg拉流代理", description = "根据代理key关闭指定的FFmpeg拉流代理")
+    @ApiResponse(responseCode = "200", description = "关闭成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<StreamKey.StringDelFlag> delFFmpegSource(
+            @Parameter(description = "代理key") @PathVariable("key") String key) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.delFFmpegSource(node.getHost(), node.getSecret(), key);
     }
@@ -393,7 +433,11 @@ public class ZlmApiController {
      * 获取录制文件列表
      */
     @PostMapping("/record/files")
-    public ServerResponse<Mp4RecordFile> getMp4RecordFile(@RequestBody RecordReq recordReq) {
+    @Operation(summary = "获取录制文件列表", description = "获取指定媒体流的录制文件列表")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<Mp4RecordFile> getMp4RecordFile(
+            @Parameter(description = "录制查询条件") @RequestBody RecordReq recordReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getMp4RecordFile(node.getHost(), node.getSecret(), recordReq);
     }
@@ -402,7 +446,11 @@ public class ZlmApiController {
      * 删除录像文件夹
      */
     @PostMapping("/record/delete-directory")
-    public DeleteRecordDirectory deleteRecordDirectory(@RequestBody Map<String, String> params) {
+    @Operation(summary = "删除录像文件夹", description = "删除指定的录像文件夹")
+    @ApiResponse(responseCode = "200", description = "删除成功",
+            content = @Content(schema = @Schema(implementation = DeleteRecordDirectory.class)))
+    public DeleteRecordDirectory deleteRecordDirectory(
+            @Parameter(description = "删除参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.deleteRecordDirectory(node.getHost(), node.getSecret(), params);
     }
@@ -424,7 +472,11 @@ public class ZlmApiController {
      * 设置录像速度
      */
     @PostMapping("/record/speed")
-    public ServerResponse<String> setRecordSpeed(@RequestBody RecordReq recordReq) {
+    @Operation(summary = "设置录像速度", description = "设置录像文件的播放速度")
+    @ApiResponse(responseCode = "200", description = "设置成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> setRecordSpeed(
+            @Parameter(description = "录制配置") @RequestBody RecordReq recordReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.setRecordSpeed(node.getHost(), node.getSecret(), recordReq);
     }
@@ -433,7 +485,11 @@ public class ZlmApiController {
      * 设置录像流播放位置
      */
     @PostMapping("/record/seek")
-    public ServerResponse<String> seekRecordStamp(@RequestBody RecordReq recordReq) {
+    @Operation(summary = "设置录像播放位置", description = "设置录像流的播放位置")
+    @ApiResponse(responseCode = "200", description = "设置成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> seekRecordStamp(
+            @Parameter(description = "录制配置") @RequestBody RecordReq recordReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.seekRecordStamp(node.getHost(), node.getSecret(), recordReq);
     }
@@ -455,7 +511,11 @@ public class ZlmApiController {
      * 是否正在录制
      */
     @PostMapping("/record/status")
-    public ServerResponse<String> isRecording(@RequestBody RecordReq recordReq) {
+    @Operation(summary = "检查录制状态", description = "检查指定媒体流是否正在录制")
+    @ApiResponse(responseCode = "200", description = "检查成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> isRecording(
+            @Parameter(description = "录制配置") @RequestBody RecordReq recordReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.isRecording(node.getHost(), node.getSecret(), recordReq);
     }
@@ -464,7 +524,11 @@ public class ZlmApiController {
      * 查询文件概览
      */
     @PostMapping("/record/summary")
-    public ServerResponse<String> getMp4RecordSummary(@RequestBody Map<String, String> params) {
+    @Operation(summary = "查询文件概览", description = "查询录制文件的概览信息")
+    @ApiResponse(responseCode = "200", description = "查询成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> getMp4RecordSummary(
+            @Parameter(description = "查询参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getMp4RecordSummary(node.getHost(), node.getSecret(), params);
     }
@@ -516,7 +580,11 @@ public class ZlmApiController {
      * 创建多路复用RTP服务器
      */
     @PostMapping("/rtp/server/open-multiplex")
-    public OpenRtpServerResult openRtpServerMultiplex(@RequestBody OpenRtpServerReq req) {
+    @Operation(summary = "创建多路复用RTP服务器", description = "创建一个多路复用RTP服务器")
+    @ApiResponse(responseCode = "200", description = "创建成功",
+            content = @Content(schema = @Schema(implementation = OpenRtpServerResult.class)))
+    public OpenRtpServerResult openRtpServerMultiplex(
+            @Parameter(description = "RTP服务器配置") @RequestBody OpenRtpServerReq req) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.openRtpServerMultiplex(node.getHost(), node.getSecret(), req);
     }
@@ -525,7 +593,11 @@ public class ZlmApiController {
      * 连接RTP服务器
      */
     @PostMapping("/rtp/server/connect")
-    public OpenRtpServerResult connectRtpServer(@RequestBody ConnectRtpServerReq req) {
+    @Operation(summary = "连接RTP服务器", description = "连接到指定的RTP服务器")
+    @ApiResponse(responseCode = "200", description = "连接成功",
+            content = @Content(schema = @Schema(implementation = OpenRtpServerResult.class)))
+    public OpenRtpServerResult connectRtpServer(
+            @Parameter(description = "RTP连接配置") @RequestBody ConnectRtpServerReq req) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.connectRtpServer(node.getHost(), node.getSecret(), req);
     }
@@ -547,7 +619,12 @@ public class ZlmApiController {
      * 更新RTP服务器过滤SSRC
      */
     @PutMapping("/rtp/server/{streamId}/ssrc/{ssrc}")
-    public ServerResponse<String> updateRtpServerSSRC(@PathVariable("streamId") String streamId, @PathVariable("ssrc") String ssrc) {
+    @Operation(summary = "更新RTP服务器SSRC", description = "更新RTP服务器的过滤SSRC")
+    @ApiResponse(responseCode = "200", description = "更新成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> updateRtpServerSSRC(
+            @Parameter(description = "流ID") @PathVariable("streamId") String streamId,
+            @Parameter(description = "SSRC值") @PathVariable("ssrc") String ssrc) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.updateRtpServerSSRC(node.getHost(), node.getSecret(), streamId, ssrc);
     }
@@ -556,7 +633,11 @@ public class ZlmApiController {
      * 暂停RTP超时检查
      */
     @PostMapping("/rtp/server/{streamId}/pause-check")
-    public ServerResponse<String> pauseRtpCheck(@PathVariable("streamId") String streamId) {
+    @Operation(summary = "暂停RTP超时检查", description = "暂停指定RTP服务器的超时检查")
+    @ApiResponse(responseCode = "200", description = "暂停成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> pauseRtpCheck(
+            @Parameter(description = "流ID") @PathVariable("streamId") String streamId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.pauseRtpCheck(node.getHost(), node.getSecret(), streamId);
     }
@@ -565,7 +646,11 @@ public class ZlmApiController {
      * 恢复RTP超时检查
      */
     @PostMapping("/rtp/server/{streamId}/resume-check")
-    public ServerResponse<String> resumeRtpCheck(@PathVariable("streamId") String streamId) {
+    @Operation(summary = "恢复RTP超时检查", description = "恢复指定RTP服务器的超时检查")
+    @ApiResponse(responseCode = "200", description = "恢复成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> resumeRtpCheck(
+            @Parameter(description = "流ID") @PathVariable("streamId") String streamId) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.resumeRtpCheck(node.getHost(), node.getSecret(), streamId);
     }
@@ -574,6 +659,9 @@ public class ZlmApiController {
      * 获取RTP服务器列表
      */
     @GetMapping("/rtp/server/list")
+    @Operation(summary = "获取RTP服务器列表", description = "获取所有正在运行的RTP服务器列表")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
     public ServerResponse<List<RtpServer>> listRtpServer() {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.listRtpServer(node.getHost(), node.getSecret());
@@ -585,7 +673,11 @@ public class ZlmApiController {
      * 开始发送rtp
      */
     @PostMapping("/rtp/send/start")
-    public StartSendRtpResult startSendRtp(@RequestBody StartSendRtpReq req) {
+    @Operation(summary = "开始发送RTP", description = "开始向指定地址发送RTP流")
+    @ApiResponse(responseCode = "200", description = "开始成功",
+            content = @Content(schema = @Schema(implementation = StartSendRtpResult.class)))
+    public StartSendRtpResult startSendRtp(
+            @Parameter(description = "RTP发送配置") @RequestBody StartSendRtpReq req) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.startSendRtp(node.getHost(), node.getSecret(), req);
     }
@@ -594,7 +686,11 @@ public class ZlmApiController {
      * 开始tcp passive被动发送rtp
      */
     @PostMapping("/rtp/send/start-passive")
-    public StartSendRtpResult startSendRtpPassive(@RequestBody StartSendRtpReq req) {
+    @Operation(summary = "开始被动发送RTP", description = "开始TCP passive模式被动发送RTP流")
+    @ApiResponse(responseCode = "200", description = "开始成功",
+            content = @Content(schema = @Schema(implementation = StartSendRtpResult.class)))
+    public StartSendRtpResult startSendRtpPassive(
+            @Parameter(description = "RTP发送配置") @RequestBody StartSendRtpReq req) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.startSendRtpPassive(node.getHost(), node.getSecret(), req);
     }
@@ -603,7 +699,11 @@ public class ZlmApiController {
      * 停止发送rtp
      */
     @PostMapping("/rtp/send/stop")
-    public ServerResponse<String> stopSendRtp(@RequestBody CloseSendRtpReq req) {
+    @Operation(summary = "停止发送RTP", description = "停止向指定地址发送RTP流")
+    @ApiResponse(responseCode = "200", description = "停止成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> stopSendRtp(
+            @Parameter(description = "RTP停止配置") @RequestBody CloseSendRtpReq req) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.stopSendRtp(node.getHost(), node.getSecret(), req);
     }
@@ -614,7 +714,11 @@ public class ZlmApiController {
      * 多文件推流
      */
     @PostMapping("/mp4/publish/start")
-    public ServerResponse startMultiMp4Publish(@RequestBody Map<String, String> params) {
+    @Operation(summary = "开始多文件推流", description = "开始推流多个MP4文件")
+    @ApiResponse(responseCode = "200", description = "开始成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse startMultiMp4Publish(
+            @Parameter(description = "推流参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.startMultiMp4Publish(node.getHost(), node.getSecret(), params);
     }
@@ -623,7 +727,11 @@ public class ZlmApiController {
      * 关闭多文件推流
      */
     @PostMapping("/mp4/publish/stop")
-    public ServerResponse stopMultiMp4Publish(@RequestBody Map<String, String> params) {
+    @Operation(summary = "停止多文件推流", description = "停止推流多个MP4文件")
+    @ApiResponse(responseCode = "200", description = "停止成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse stopMultiMp4Publish(
+            @Parameter(description = "停止参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.stopMultiMp4Publish(node.getHost(), node.getSecret(), params);
     }
@@ -632,7 +740,11 @@ public class ZlmApiController {
      * 点播mp4文件
      */
     @PostMapping("/mp4/load")
-    public ServerResponse loadMP4File(@RequestBody Map<String, String> params) {
+    @Operation(summary = "点播MP4文件", description = "加载并点播指定MP4文件")
+    @ApiResponse(responseCode = "200", description = "加载成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse loadMP4File(
+            @Parameter(description = "文件参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.loadMP4File(node.getHost(), node.getSecret(), params);
     }
@@ -643,7 +755,11 @@ public class ZlmApiController {
      * 获取存储信息
      */
     @PostMapping("/storage/space")
-    public ServerResponse<String> getStorageSpace(@RequestBody Map<String, String> params) {
+    @Operation(summary = "获取存储空间信息", description = "获取服务器的存储空间信息")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<String> getStorageSpace(
+            @Parameter(description = "查询参数") @RequestBody Map<String, String> params) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getStorageSpace(node.getHost(), node.getSecret(), params);
     }
