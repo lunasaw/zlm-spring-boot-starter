@@ -2,7 +2,6 @@ package io.github.lunasaw.zlm.api;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
-import com.google.common.collect.Maps;
 import com.luna.common.check.Assert;
 import com.luna.common.file.FileTools;
 import com.luna.common.net.HttpUtils;
@@ -311,6 +310,60 @@ public class ZlmRestService {
         MediaInfo mediaInfo = executeApiCall(host, secret, ApiConstants.GET_MEDIA_INFO, mediaReq, new TypeReference<MediaInfo>() {
         }, MediaReq::toMap);
         return ServerResponse.success(mediaInfo);
+    }
+
+    /**
+     * 获取播放地址
+     */
+    public static ServerResponse<PlayUrl> getPlaybackUrls(String host, String secret, MediaReq mediaReq) {
+        PlayUrl playUrl = generatePlayUrls(host, secret, mediaReq);
+        return ServerResponse.success(playUrl);
+    }
+
+    /**
+     * 根据参数生成各协议播放地址
+     */
+    private static PlayUrl generatePlayUrls(String host, String secret, MediaReq mediaReq) {
+        PlayUrl urls = new PlayUrl();
+        String vhost = mediaReq.getVhost();
+        String app = mediaReq.getApp();
+        String stream = mediaReq.getStream();
+
+        // 获取主机地址
+        String baseHost = host.replace("http://", "").replace("https://", "");
+        if (baseHost.contains(":")) {
+            baseHost = baseHost.substring(0, baseHost.indexOf(":"));
+        }
+
+        // 获取服务器配置
+        ServerResponse<List<ServerNodeConfig>> configResponse = getServerConfig(host, secret);
+        Map<String, String> configMap = new HashMap<>();
+        if (configResponse != null && configResponse.getData() != null && !configResponse.getData().isEmpty()) {
+            ServerNodeConfig config = configResponse.getData().get(0);
+            configMap.put("rtsp.port", config.getRtspPort());
+            configMap.put("rtmp.port", config.getRtmpPort());
+            configMap.put("http.port", config.getHttpPort());
+            configMap.put("rtc.port", config.getRtcPort());
+            configMap.put("srt.port", config.getSrtPort());
+        }
+
+        // 使用配置中的端口，如果没有配置则使用默认端口
+        String rtspPort = configMap.getOrDefault("rtsp.port", "554");
+        String rtmpPort = configMap.getOrDefault("rtmp.port", "1935");
+        String httpPort = configMap.getOrDefault("http.port", "80");
+
+        // 生成不同协议的播放地址
+        urls.setRtsp(String.format("rtsp://%s:%s/%s/%s", baseHost, rtspPort, app, stream));
+        urls.setRtmp(String.format("rtmp://%s:%s/%s/%s", baseHost, rtmpPort, app, stream));
+        urls.setHttpFlv(String.format("http://%s:%s/%s/%s.live.flv", baseHost, httpPort, app, stream));
+        urls.setWsFlv(String.format("ws://%s:%s/%s/%s.live.flv", baseHost, httpPort, app, stream));
+        urls.setHls(String.format("http://%s:%s/%s/%s/hls.m3u8", baseHost, httpPort, app, stream));
+        urls.setHttpTs(String.format("http://%s:%s/%s/%s.live.ts", baseHost, httpPort, app, stream));
+        urls.setWsTs(String.format("ws://%s:%s/%s/%s.live.ts", baseHost, httpPort, app, stream));
+        urls.setHttpFmp4(String.format("http://%s:%s/%s/%s.live.mp4", baseHost, httpPort, app, stream));
+        urls.setWsFmp4(String.format("ws://%s:%s/%s/%s.live.mp4", baseHost, httpPort, app, stream));
+
+        return urls;
     }
 
 

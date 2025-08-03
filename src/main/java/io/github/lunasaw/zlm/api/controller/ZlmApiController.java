@@ -22,8 +22,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -262,6 +260,19 @@ public class ZlmApiController {
             @Parameter(description = "媒体流信息") @RequestBody MediaReq mediaReq) {
         ZlmNode node = getAvailableNode();
         return ZlmRestService.getMediaInfo(node.getHost(), node.getSecret(), mediaReq);
+    }
+
+    /**
+     * 获取播放地址
+     */
+    @PostMapping("/media/play-urls")
+    @Operation(summary = "获取播放地址", description = "获取指定媒体流的多协议播放地址")
+    @ApiResponse(responseCode = "200", description = "获取成功",
+            content = @Content(schema = @Schema(implementation = ServerResponse.class)))
+    public ServerResponse<PlayUrl> getPlaybackUrls(
+            @Parameter(description = "媒体流信息") @RequestBody MediaReq mediaReq) {
+        ZlmNode node = getAvailableNode();
+        return ZlmRestService.getPlaybackUrls(node.getHost(), node.getSecret(), mediaReq);
     }
 
     /**
