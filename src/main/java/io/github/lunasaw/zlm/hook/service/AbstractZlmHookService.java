@@ -83,4 +83,9 @@ public abstract class AbstractZlmHookService implements ZlmHookService {
     public void onRecordMp4(OnRecordMp4HookParam param, HttpServletRequest request) {
 
     }
+
+    @Override
+    public void onProxyAdded(OnProxyAddedHookParam param, HttpServletRequest request) {
+
+    }
 }
