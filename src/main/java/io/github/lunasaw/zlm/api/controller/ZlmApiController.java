@@ -10,6 +10,7 @@ import io.github.lunasaw.zlm.entity.req.MediaReq;
 import io.github.lunasaw.zlm.entity.req.RecordReq;
 import io.github.lunasaw.zlm.entity.req.SnapshotReq;
 import io.github.lunasaw.zlm.entity.rtp.*;
+import io.github.lunasaw.zlm.hook.service.ZlmHookService;
 import io.github.lunasaw.zlm.node.LoadBalancer;
 import io.github.lunasaw.zlm.node.NodeSupplier;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +53,9 @@ public class ZlmApiController {
 
     @Autowired
     private HttpServletRequest request;
+
+    @Autowired
+    private ZlmHookService zlmHookService;
 
     /**
      * 获取可用的 ZLM 节点
@@ -342,7 +346,10 @@ public class ZlmApiController {
     public ServerResponse<StreamKey> addStreamProxy(
             @Parameter(description = "拉流代理配置") @RequestBody StreamProxyItem streamProxyItem) {
         ZlmNode node = getAvailableNode();
-        return ZlmRestService.addStreamProxy(node.getHost(), node.getSecret(), streamProxyItem);
+        ServerResponse<StreamKey> serverResponse = ZlmRestService.addStreamProxy(node.getHost(), node.getSecret(), streamProxyItem);
+        Assert.notNull(serverResponse.getData(), "拉流代理添加失败");
+        zlmHookService.onProxyAdded(streamProxyItem, serverResponse.getData(), request);
+        return serverResponse;
     }
 
     /**

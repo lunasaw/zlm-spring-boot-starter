@@ -1,6 +1,8 @@
 package io.github.lunasaw.zlm.hook.service;
 
 import io.github.lunasaw.zlm.entity.ServerNodeConfig;
+import io.github.lunasaw.zlm.entity.StreamKey;
+import io.github.lunasaw.zlm.entity.StreamProxyItem;
 import io.github.lunasaw.zlm.hook.param.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +87,7 @@ public abstract class AbstractZlmHookService implements ZlmHookService {
     }
 
     @Override
-    public void onProxyAdded(OnProxyAddedHookParam param, HttpServletRequest request) {
+    public void onProxyAdded(StreamProxyItem param, StreamKey streamKey, HttpServletRequest request) {
 
     }
 }
