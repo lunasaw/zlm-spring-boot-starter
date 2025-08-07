@@ -819,7 +819,7 @@ public class ZlmApiController {
     @ApiResponse(responseCode = "200", description = "获取成功",
             content = @Content(schema = @Schema(implementation = List.class)))
     public List<ZlmNode> getAllNodes() {
-        return nodeService.getAllNodes();
+        return nodeSupplier.getNodes();
     }
 
     // ==================== 异常处理 ====================

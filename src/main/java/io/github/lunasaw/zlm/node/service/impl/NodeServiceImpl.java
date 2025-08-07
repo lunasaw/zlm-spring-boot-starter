@@ -23,9 +23,6 @@ public class NodeServiceImpl implements NodeService {
     @Autowired
     private LoadBalancer loadBalancer;
 
-    @Autowired
-    private NodeSupplier nodeSupplier;
-
     @Override
     public ZlmNode getAvailableNode(String nodeKey) {
         Assert.hasText(nodeKey, "节点key不能为空");
@@ -43,23 +40,4 @@ public class NodeServiceImpl implements NodeService {
         Assert.notNull(node, "未找到可用的ZLM节点");
         return node;
     }
-
-    @Override
-    public List<ZlmNode> getAllNodes() {
-        return nodeSupplier.getNodes();
-    }
-
-    @Override
-    public boolean hasNode(String nodeKey) {
-        if (nodeKey == null || nodeKey.trim().isEmpty()) {
-            return false;
-        }
-        return nodeSupplier.getNode(nodeKey) != null;
-    }
-
-    @Override
-    public int getNodeCount() {
-        List<ZlmNode> nodes = getAllNodes();
-        return nodes != null ? nodes.size() : 0;
-    }
-} 
+}

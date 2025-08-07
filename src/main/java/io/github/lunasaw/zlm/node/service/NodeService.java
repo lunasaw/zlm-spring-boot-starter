@@ -5,8 +5,8 @@ import io.github.lunasaw.zlm.config.ZlmNode;
 import java.util.List;
 
 /**
- * ZLM节点服务接口
- * 提供节点选择、管理和查询功能
+ * ZLM节点负载均衡服务接口
+ * 专注于负载均衡功能，提供节点选择服务
  *
  * @author luna
  * @date 2025/01/23
@@ -40,26 +40,4 @@ public interface NodeService {
     default ZlmNode selectNode() {
         return selectNode("default");
     }
-
-    /**
-     * 获取所有可用节点列表
-     *
-     * @return 节点列表
-     */
-    List<ZlmNode> getAllNodes();
-
-    /**
-     * 检查指定节点是否存在
-     *
-     * @param nodeKey 节点key
-     * @return 如果节点存在返回true，否则返回false
-     */
-    boolean hasNode(String nodeKey);
-
-    /**
-     * 获取可用节点数量
-     *
-     * @return 节点数量
-     */
-    int getNodeCount();
-} 
+}
