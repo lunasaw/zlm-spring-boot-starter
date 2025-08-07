@@ -13,6 +13,7 @@ import io.github.lunasaw.zlm.entity.rtp.*;
 import io.github.lunasaw.zlm.hook.service.ZlmHookService;
 import io.github.lunasaw.zlm.node.LoadBalancer;
 import io.github.lunasaw.zlm.node.NodeSupplier;
+import io.github.lunasaw.zlm.node.service.NodeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,6 +53,9 @@ public class ZlmApiController {
     private NodeSupplier nodeSupplier;
 
     @Autowired
+    private NodeService nodeService;
+
+    @Autowired
     private HttpServletRequest request;
 
     @Autowired
@@ -72,17 +76,13 @@ public class ZlmApiController {
      * @param nodeKey 节点key，如果为空则使用负载均衡策略选择节点
      */
     private ZlmNode getAvailableNode(String nodeKey) {
-        ZlmNode selectNode;
         if (nodeKey != null && !nodeKey.trim().isEmpty()) {
             // 使用指定的节点key获取节点
-            selectNode = nodeSupplier.getNode(nodeKey);
-            Assert.notNull(selectNode, "指定的节点不存在: " + nodeKey);
+            return nodeService.getAvailableNode(nodeKey);
         } else {
             // 使用负载均衡策略选择节点
-            selectNode = loadBalancer.selectNode("default");
-            Assert.notNull(selectNode, "未找到可用的ZLM节点");
+            return nodeService.selectNode();
         }
-        return selectNode;
     }
 
     // ==================== 系统信息接口 ====================
@@ -793,10 +793,7 @@ public class ZlmApiController {
             content = @Content(schema = @Schema(implementation = ServerResponse.class)))
     public ServerResponse<Version> getVersionByNode(
             @Parameter(description = "节点ID") @PathVariable("nodeId") String nodeId) {
-        ZlmNode node = nodeSupplier.getNode(nodeId);
-        if (node == null) {
-            throw new IllegalArgumentException("节点不存在: " + nodeId);
-        }
+        ZlmNode node = nodeService.getAvailableNode(nodeId);
         return ZlmRestService.getVersion(node.getHost(), node.getSecret());
     }
 
@@ -810,10 +807,7 @@ public class ZlmApiController {
     public ServerResponse<List<MediaData>> getMediaListByNode(
             @Parameter(description = "节点ID") @PathVariable(value = "nodeId") String nodeId,
             @Parameter(description = "媒体查询条件") @RequestBody MediaReq mediaReq) {
-        ZlmNode node = nodeSupplier.getNode(nodeId);
-        if (node == null) {
-            throw new IllegalArgumentException("节点不存在: " + nodeId);
-        }
+        ZlmNode node = nodeService.getAvailableNode(nodeId);
         return ZlmRestService.getMediaList(node.getHost(), node.getSecret(), mediaReq);
     }
 
@@ -825,7 +819,7 @@ public class ZlmApiController {
     @ApiResponse(responseCode = "200", description = "获取成功",
             content = @Content(schema = @Schema(implementation = List.class)))
     public List<ZlmNode> getAllNodes() {
-        return zlmProperties.getNodes();
+        return nodeService.getAllNodes();
     }
 
     // ==================== 异常处理 ====================
