@@ -44,12 +44,6 @@ import java.util.Map;
 public class ZlmApiController {
 
     @Autowired
-    private ZlmProperties zlmProperties;
-
-    @Autowired
-    private LoadBalancer loadBalancer;
-
-    @Autowired
     private NodeSupplier nodeSupplier;
 
     @Autowired
