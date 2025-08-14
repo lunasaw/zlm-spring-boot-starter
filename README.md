@@ -10,6 +10,7 @@
 ZLMediaKit的Spring Boot Starter，是一个针对[ZLMediaKit](https://github.com/ZLMediaKit/ZLMediaKit)
 流媒体服务器的Java集成组件。本项目对ZLMediaKit的REST
 API进行了完整封装，并提供了Hook事件处理机制，支持集群化管理和多种负载均衡策略，让Java开发者能够轻松集成和管理ZLMediaKit流媒体服务器。
+完整的视频平台实现：[voglander](https://github.com/lunasaw/voglander)
 
 [文档链接](https://github.com/lunasaw/zlm-spring-boot-starter/blob/master/zlm-api.md) | [API文档](https://lunasaw.github.io/zlm-spring-boot-starter/)
 
