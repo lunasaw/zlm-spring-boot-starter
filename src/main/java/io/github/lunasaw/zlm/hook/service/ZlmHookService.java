@@ -1,6 +1,8 @@
 package io.github.lunasaw.zlm.hook.service;
 
 import io.github.lunasaw.zlm.entity.ServerNodeConfig;
+import io.github.lunasaw.zlm.entity.StreamKey;
+import io.github.lunasaw.zlm.entity.StreamProxyItem;
 import io.github.lunasaw.zlm.hook.param.*;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -43,4 +45,6 @@ public interface ZlmHookService {
     void onServerExited(HookParam param, HttpServletRequest request);
 
     void onRecordMp4(OnRecordMp4HookParam param, HttpServletRequest request);
+
+    void onProxyAdded(StreamProxyItem param, StreamKey streamKey, HttpServletRequest request);
 }

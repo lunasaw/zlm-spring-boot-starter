@@ -10,6 +10,6 @@ import lombok.Data;
  */
 @Data
 public class MediaOnlineStatus extends ServerResponse<String> {
-    private String online;
+    private Boolean online;
 
 }

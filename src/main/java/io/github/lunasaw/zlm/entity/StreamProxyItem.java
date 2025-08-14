@@ -10,6 +10,7 @@ import java.util.Map;
 
 /**
  * This class represents a stream with various properties.
+ * @author luna
  */
 @Data
 @NoArgsConstructor
