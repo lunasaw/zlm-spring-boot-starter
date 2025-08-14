@@ -21,7 +21,9 @@ API进行了完整封装，并提供了Hook事件处理机制，支持集群化�
 - 🎯 **Hook事件处理**: 支持ZLMediaKit的所有Hook事件回调
 - ⚖️ **负载均衡**: 内置5种负载均衡算法，支持集群化部署
 - 🔧 **灵活配置**: 支持多节点配置，可独立启用/禁用节点和Hook功能
-- 🌐 **动态节点发现**: 支持NodeSupplier接口实现动态节点管理和服务发现
+    - 静态配置：通过`application.yml`启动配置节点列表
+    - 动态配置：实现`NodeSupplier`接口支持动态节点发现和管理
+- 🌐 **动态节点发现**: 支持从数据库、注册中心、配置中心等数据源动态获取节点
 - 📊 **监控支持**: 提供流媒体状态监控和统计信息获取
 - 🎬 **流媒体管理**: 支持流的推拉、录制、截图等完整功能
 - 🔐 **安全认证**: 支持RTSP认证和HTTP访问控制
@@ -45,11 +47,15 @@ API进行了完整封装，并提供了Hook事件处理机制，支持集群化�
 <dependency>
     <groupId>io.github.lunasaw</groupId>
     <artifactId>zlm-spring-boot-starter</artifactId>
-    <version>1.0.6</version>
+    <version>${last.version}</version>
 </dependency>
 ```
 
-### 2. 配置文件
+### 2. 节点配置
+
+本项目支持两种节点配置方式：
+
+#### 方式一：启动配置（静态）
 
 在 `application.yml` 中添加ZLMediaKit配置：
 
@@ -69,6 +75,10 @@ zlm:
       enabled: true
       hook-enabled: true
 ```
+
+#### 方式二：动态配置（推荐）
+
+实现`NodeSupplier`接口支持动态节点发现，详见[动态节点发现 (NodeSupplier)](#动态节点发现-nodesupplier)章节。
 
 ### 3. 使用REST API
 

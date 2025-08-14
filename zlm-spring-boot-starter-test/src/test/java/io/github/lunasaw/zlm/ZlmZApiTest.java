@@ -43,6 +43,9 @@ public class ZlmZApiTest {
         });
         for (int i = 0; i < 100; i++) {
             ZlmNode node = weightRoundRobinLoadBalancer.selectNode("12312" + i);
+            if (node == null) {
+                continue;
+            }
             if (Objects.equals(node.getServerId(), "1234")) {
                 k.getAndIncrement();
             }

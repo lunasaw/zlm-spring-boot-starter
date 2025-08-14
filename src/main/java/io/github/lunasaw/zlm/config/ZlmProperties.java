@@ -24,10 +24,11 @@ public class ZlmProperties implements InitializingBean {
      * 对外NodeMap
      */
     public static Map<String, ZlmNode> nodeMap = new ConcurrentHashMap<>();
-    public static List<ZlmNode> nodes = new CopyOnWriteArrayList<>();
-    private boolean enable = true;
 
+    private boolean enable = true;
+    private boolean hookEnable = true;
     private LoadBalancerEnums balance = LoadBalancerEnums.ROUND_ROBIN;
+    private List<ZlmNode> nodes = new CopyOnWriteArrayList<>();
 
 
     public Map<String, ZlmNode> getNodeMap() {
@@ -35,11 +36,16 @@ public class ZlmProperties implements InitializingBean {
     }
 
     public List<ZlmNode> getNodes() {
-        return nodes;
+        return this.nodes;
     }
 
     @Override
     public void afterPropertiesSet() {
-        nodeMap = nodes.stream().filter(ZlmNode::isEnabled).collect(Collectors.toMap(ZlmNode::getServerId, node -> node));
+        // 初始化节点映射，只包含启用的节点
+        if (this.nodes != null && !this.nodes.isEmpty()) {
+            nodeMap = this.nodes.stream()
+                    .filter(ZlmNode::isEnabled)
+                    .collect(Collectors.toMap(ZlmNode::getServerId, node -> node));
+        }
     }
 }

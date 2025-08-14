@@ -5,6 +5,7 @@ import io.github.lunasaw.zlm.config.ZlmProperties;
 import io.github.lunasaw.zlm.node.NodeSupplier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -18,8 +19,11 @@ import java.util.List;
 @Slf4j
 public class DefaultNodeSupplier implements NodeSupplier {
 
-    @Autowired
     private ZlmProperties zlmProperties;
+
+    public DefaultNodeSupplier(ZlmProperties zlmProperties) {
+        this.zlmProperties = zlmProperties;
+    }
 
     @Override
     public String getName() {

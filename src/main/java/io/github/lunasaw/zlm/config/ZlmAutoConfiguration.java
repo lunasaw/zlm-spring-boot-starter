@@ -5,6 +5,7 @@ import io.github.lunasaw.zlm.hook.service.impl.DefaultZlmHookServiceImpl;
 import io.github.lunasaw.zlm.node.LoadBalancer;
 import io.github.lunasaw.zlm.node.NodeSupplier;
 import io.github.lunasaw.zlm.node.impl.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @date 2023/12/2
  * @description:
  */
+@Slf4j
 @AutoConfiguration
 @ConfigurationPropertiesScan
 @EnableConfigurationProperties(ZlmProperties.class)
@@ -31,43 +33,37 @@ public class ZlmAutoConfiguration {
     ZlmProperties zlmProperties;
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(ZlmHookService.class)
     public ZlmHookService zlmHookService() {
         return new DefaultZlmHookServiceImpl();
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(NodeSupplier.class)
     public NodeSupplier nodeSupplier() {
-        return new DefaultNodeSupplier();
+        log.info("创建默认NodeSupplier实例，节点配置数量: {}",
+                zlmProperties.getNodes() != null ? zlmProperties.getNodes().size() : 0);
+        return new DefaultNodeSupplier(zlmProperties);
     }
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(LoadBalancer.class)
     public LoadBalancer loadBalancer(NodeSupplier nodeSupplier) {
-        LoadBalancer balancer;
-        switch (zlmProperties.getBalance()) {
-            case RANDOM:
-                balancer = new RandomLoadBalancer();
-                break;
-            case ROUND_ROBIN:
-                balancer = new RoundRobinLoadBalancer();
-                break;
-            case CONSISTENT_HASHING:
-                balancer = new ConsistentHashingLoadBalancer();
-                break;
-            case WEIGHT_RANDOM:
-                balancer = new WeightRandomLoadBalancer();
-                break;
-            case WEIGHT_ROUND_ROBIN:
-                balancer = new WeightRoundRobinLoadBalancer();
-                break;
-            default:
-                throw new RuntimeException("未找到负载均衡器");
-        }
+        log.info("创建LoadBalancer实例，算法: {}，NodeSupplier: {}",
+                zlmProperties.getBalance(), nodeSupplier.getName());
+
+        LoadBalancer balancer = switch (zlmProperties.getBalance()) {
+            case RANDOM -> new RandomLoadBalancer();
+            case ROUND_ROBIN -> new RoundRobinLoadBalancer();
+            case CONSISTENT_HASHING -> new ConsistentHashingLoadBalancer();
+            case WEIGHT_RANDOM -> new WeightRandomLoadBalancer();
+            case WEIGHT_ROUND_ROBIN -> new WeightRoundRobinLoadBalancer();
+            default -> throw new RuntimeException("未找到负载均衡器: " + zlmProperties.getBalance());
+        };
 
         // 设置NodeSupplier到LoadBalancer中
         balancer.setNodeSupplier(nodeSupplier);
+        log.info("LoadBalancer配置完成，类型: {}", balancer.getType());
 
         return balancer;
     }
