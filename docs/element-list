@@ -13,3 +13,5 @@ io.github.lunasaw.zlm.hook.service
 io.github.lunasaw.zlm.hook.service.impl
 io.github.lunasaw.zlm.node
 io.github.lunasaw.zlm.node.impl
+io.github.lunasaw.zlm.node.service
+io.github.lunasaw.zlm.node.service.impl
