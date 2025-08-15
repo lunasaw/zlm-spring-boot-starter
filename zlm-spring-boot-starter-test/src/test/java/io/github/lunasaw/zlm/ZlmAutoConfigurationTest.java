@@ -43,10 +43,8 @@ public class ZlmAutoConfigurationTest {
     @Test
     void testNodeSupplierBeanCreation() {
         // 这个测试主要验证NodeSupplier Bean能够正常创建
-        // 在实际的Spring Boot测试中，我们需要注入Bean来验证
         assertDoesNotThrow(() -> {
-            ZlmProperties properties = new ZlmProperties();
-            NodeSupplier supplier = new io.github.lunasaw.zlm.node.impl.DefaultNodeSupplier(properties);
+            NodeSupplier supplier = new io.github.lunasaw.zlm.node.impl.DefaultNodeSupplier();
             assertNotNull(supplier);
             assertEquals("DefaultNodeSupplier", supplier.getName());
         });
@@ -56,8 +54,7 @@ public class ZlmAutoConfigurationTest {
     void testLoadBalancerConfiguration() {
         // 验证LoadBalancer配置逻辑
         assertDoesNotThrow(() -> {
-            ZlmProperties properties = new ZlmProperties();
-            NodeSupplier nodeSupplier = new io.github.lunasaw.zlm.node.impl.DefaultNodeSupplier(properties);
+            NodeSupplier nodeSupplier = new io.github.lunasaw.zlm.node.impl.DefaultNodeSupplier();
 
             // 模拟配置过程
             LoadBalancer balancer = new io.github.lunasaw.zlm.node.impl.RoundRobinLoadBalancer();

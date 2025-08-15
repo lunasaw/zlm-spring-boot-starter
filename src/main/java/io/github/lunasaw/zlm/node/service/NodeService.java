@@ -37,7 +37,5 @@ public interface NodeService {
      * @return 选中的节点
      * @throws IllegalStateException 当没有可用节点时抛出
      */
-    default ZlmNode selectNode() {
-        return selectNode("default");
-    }
+    ZlmNode selectNode();
 }

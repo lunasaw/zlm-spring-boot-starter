@@ -21,6 +21,9 @@ public class DefaultNodeSupplier implements NodeSupplier {
 
     private ZlmProperties zlmProperties;
 
+    public DefaultNodeSupplier() {
+    }
+
     public DefaultNodeSupplier(ZlmProperties zlmProperties) {
         this.zlmProperties = zlmProperties;
     }
