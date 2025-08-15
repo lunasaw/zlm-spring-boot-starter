@@ -17,7 +17,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <spring-boot.version>3.5.3</spring-boot.version>
-        <luna-common.version>2.6.5</luna-common.version>
+        <luna-common.version>2.6.8</luna-common.version>
         <github.username>lunasaw</github.username>
         <app.profiles>${project.name}</app.profiles>
         <zlm-spring-boot-starter.version>1.0.10-SNAPSHOT</zlm-spring-boot-starter.version>
